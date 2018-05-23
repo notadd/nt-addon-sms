@@ -1,11 +1,12 @@
-import { MiddlewareConsumer, Module, NestModule, RequestMethod } from "@nestjs/common";
+import { MiddlewareConsumer, Module, NestModule } from "@nestjs/common";
 import { GraphQLFactory, GraphQLModule } from "@nestjs/graphql";
 import { TypeOrmModule } from "@nestjs/typeorm";
 import { graphiqlExpress, graphqlExpress } from "apollo-server-express";
+
 import { SmsModule } from "./modules/sms.module";
 
 @Module({
-  modules: [
+  imports: [
     GraphQLModule,
     TypeOrmModule.forRoot(),
     SmsModule
