@@ -4,10 +4,13 @@
     "description": "Notadd 短信验证码插件",
     "main": "index.ts",
     "scripts": {
+        "build": "node --max_old_space_size=4096 ./node_modules/gulp/bin/gulp.js build",
+        "fix": "tslint -p tsconfig.json -c tslint.json --fix",
+        "prepublish": "node --max_old_space_size=4096 ./node_modules/gulp/bin/gulp.js build",
+        "publish": "node ./node_modules/lerna/bin/lerna.js publish -m \"chore(release): publish %s\"",
         "start": "node index.ts",
         "start:watch": "nodemon",
-        "check": "tslint -p tsconfig.json -c tslint.json",
-        "fix": "tslint -p tsconfig.json -c tslint.json --fix"
+        "check": "tslint -p tsconfig.json -c tslint.json"
     },
     "author": "dzzzzzy",
     "license": "MIT",
