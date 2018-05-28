@@ -8,14 +8,14 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 Object.defineProperty(exports, "__esModule", { value: true });
 const common_1 = require("@nestjs/common");
 const typeorm_1 = require("@nestjs/typeorm");
-const sms_controller_1 = require("../controllers/sms.controller");
-const sms_log_entity_1 = require("../entities/sms-log.entity");
-const sms_template_entity_1 = require("../entities/sms-template.entity");
-const sms_entity_1 = require("../entities/sms.entity");
-const sms_resolver_1 = require("../resolvers/sms.resolver");
-const qcloud_service_1 = require("../services/qcloud.service");
-const sms_service_1 = require("../services/sms.service");
-const param_util_1 = require("../utils/param.util");
+const sms_controller_1 = require("./controllers/sms.controller");
+const sms_log_entity_1 = require("./entities/sms-log.entity");
+const sms_template_entity_1 = require("./entities/sms-template.entity");
+const sms_entity_1 = require("./entities/sms.entity");
+const sms_resolver_1 = require("./resolvers/sms.resolver");
+const qcloud_service_1 = require("./services/qcloud.service");
+const sms_service_1 = require("./services/sms.service");
+const param_util_1 = require("./utils/param.util");
 let SmsModule = class SmsModule {
 };
 SmsModule = __decorate([
@@ -33,3 +33,5 @@ SmsModule = __decorate([
     })
 ], SmsModule);
 exports.SmsModule = SmsModule;
+
+//# sourceMappingURL=sms.module.js.map

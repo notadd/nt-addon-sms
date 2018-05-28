@@ -3,7 +3,7 @@ import { GraphQLFactory, GraphQLModule } from "@nestjs/graphql";
 import { TypeOrmModule } from "@nestjs/typeorm";
 import { graphiqlExpress, graphqlExpress } from "apollo-server-express";
 
-import { SmsModule } from "./modules/sms.module";
+import { SmsModule } from "../src/sms.module";
 
 @Module({
   imports: [

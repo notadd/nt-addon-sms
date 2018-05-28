@@ -86,3 +86,5 @@ QcloudService = __decorate([
     __metadata("design:paramtypes", [param_util_1.ParamUtil])
 ], QcloudService);
 exports.QcloudService = QcloudService;
+
+//# sourceMappingURL=qcloud.service.js.map

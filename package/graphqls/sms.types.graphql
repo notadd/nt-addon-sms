@@ -1,0 +1,134 @@
+type Query {
+    # 发送短信
+    sendMessage(smsRequest: SmsRequest!): SmsResponse
+    # 查询指定 appId 的短信插件信息
+    smsInfo(appId: String!): SmsInfo
+    # 查询所有短信插件信息
+    smsInfos: SmsInfo
+    # 查询指定 templateId 的短信发送记录
+    smsLog(templateId: String!): SmsLogInfo
+    # 查询所有短信发送记录
+    smsLogs: SmsLogInfo
+}
+
+type Mutation {
+    # 创建短信插件
+    createSms(sms: Sms): Result
+    # 增加短信模板
+    addTemplateToSms(appId: String!, smsTemplate: [SmsTemplate]!): Result
+    # 删除短信插件
+    deleteSms(appId: String!): Result
+    # 删除短信模板
+    deleteSmsTemplate(templateId: String!): Result
+    # 更新短信插件
+    updateSms(appId: String!, signName: String!, validationTime: Int!): Result
+    # 更新短信模板
+    updateSmsTemplate(templateId: String!, name: String!, remark: String!): Result
+}
+
+# 腾讯云发送返回数据
+type SmsResponse {
+    # 状态码
+    code: Int
+    # 返回消息
+    message: String
+    # 验证码
+    validationCode: Int
+    # 验证码有效期
+    validationTime: Int
+}
+
+# 短信插件信息
+type SmsInfo {
+    # 状态码
+    code: Int
+    # 返回消息
+    message: String
+    # 短信插件信息
+    data: [SmsData]
+}
+
+# 短信发送记录信息
+type SmsLogInfo {
+    # 状态码
+    code: Int
+    # 返回消息
+    message: String
+    # 短信发送记录数据
+    data: [SmsLogData]
+}
+
+# 短信插件数据
+type SmsData {
+    # 腾讯云：SDK AppID
+    appId: String
+    # 短信签名
+    signName: String
+    # 短信模板
+    templates: [SmsTemplateData]
+    # 验证码有效期
+    validationTime: Int
+}
+
+# 短信模板数据
+type SmsTemplateData {
+    # 模板ID
+    templateId: String
+    # 模板标识
+    name: String
+    # 模板备注
+    remark: String
+}
+
+# 短信发送记录数据
+type SmsLogData {
+    id: Int
+    # 发送时间
+    sendTime: String
+    # 短信接收手机号
+    targetMobile: String
+    # 短信验证码
+    validationCode: Int
+    # 验证码有效期
+    validationTime: Int
+    # 是否发送成功
+    isSuccess: Boolean
+    # 云服务返回的状态码
+    responseCode: String
+    # 云服务返回的消息
+    responseMessage: String
+}
+
+# 短信插件实体信息
+input Sms {
+    # 腾讯云：SDK AppID
+    appId: String!
+    # 腾讯云：App Key
+    appKey: String!
+    # 短信签名
+    signName: String!
+    # 短信模板
+    templates: [SmsTemplate]!
+    # 验证码有效期
+    validationTime: Int
+}
+
+# 短信模板信息
+input SmsTemplate {
+    # 云服务申请的模板ID
+    templateId: String
+    # 模板标识
+    name: String
+    # 备注
+    remark: String
+}
+
+# 腾讯云发送短信请求参数
+input SmsRequest {
+    # 短信插件ID
+    appId: String
+    # 模板
+    templateId: String
+    # 用户手机号
+    mobile: [String]
+}
