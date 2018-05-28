@@ -171,8 +171,9 @@ let SmsService = class SmsService {
             }
             else {
                 const existTemplate = yield this.smsTemplateRepository.findOne(smsRequest.templateId);
-                if (!existTemplate)
+                if (!existTemplate) {
                     throw new common_1.HttpException(`指定短信模板'templateId=${smsRequest.templateId}'不存在`, 400);
+                }
                 smsRequest.signName = existSms.signName;
                 smsRequest.appKey = yield this.paramUtil.decryptor(existSms.appId, existSms.appKey);
                 const validationCode = yield this.paramUtil.genValidationCode();
@@ -216,3 +217,5 @@ SmsService = __decorate([
         typeorm_2.Repository])
 ], SmsService);
 exports.SmsService = SmsService;
+
+//# sourceMappingURL=sms.service.js.map

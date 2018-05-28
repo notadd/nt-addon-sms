@@ -4,7 +4,6 @@ import * as crypto from "crypto";
 
 import { SmsTemplate } from "../entities/sms-template.entity";
 
-
 /**
  * 短信验证码服务的各类参数工具
  */

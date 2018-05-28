@@ -44,7 +44,7 @@ modules.forEach(module => {
 });
 
 gulp.task("build", function (cb) {
-    sequence("upyun", modules.filter((module) => module !== "upyun"), cb);
+    sequence("sms", modules.filter((module) => module !== "sms"), cb);
 });
 
 function tasks() {

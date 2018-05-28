@@ -7,7 +7,6 @@ import { SmsLogInfo } from "../interfaces/sms-log-info.interface";
 import { SmsResponse } from "../interfaces/sms-response.interface";
 import { SmsService } from "../services/sms.service";
 
-
 @Resolver()
 export class SmsResolver {
     constructor(@Inject(SmsService) private readonly smsService: SmsService) {

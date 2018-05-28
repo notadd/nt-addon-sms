@@ -43,7 +43,7 @@ let QcloudService = class QcloudService {
             }
             else {
                 url = this.smsApiBase + "sendmultisms2";
-                mobile = smsRequest.mobile.map(item => { return { mobile: item, nationcode: "86" }; });
+                mobile = smsRequest.mobile.map(item => ({ mobile: item, nationcode: "86" }));
             }
             url += `?sdkappid=${smsRequest.appId}&random=${random}`;
             const reqBody = JSON.stringify({
@@ -86,3 +86,5 @@ QcloudService = __decorate([
     __metadata("design:paramtypes", [param_util_1.ParamUtil])
 ], QcloudService);
 exports.QcloudService = QcloudService;
+
+//# sourceMappingURL=qcloud.service.js.map

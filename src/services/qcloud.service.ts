@@ -36,7 +36,7 @@ export class QcloudService {
             mobile = { mobile: smsRequest.mobile[0], nationcode: "86" };    // nationcode 为国家码，现只支持国内(86)
         } else {
             url = this.smsApiBase + "sendmultisms2";
-            mobile = smsRequest.mobile.map(item => { return { mobile: item, nationcode: "86" }; });
+            mobile = smsRequest.mobile.map(item => ({ mobile: item, nationcode: "86" }));
         }
         url += `?sdkappid=${smsRequest.appId}&random=${random}`;
         // api 调用参数
