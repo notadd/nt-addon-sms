@@ -15,7 +15,10 @@
     "author": "notadd",
     "license": "Apache-2.0",
     "dependencies": {
-        "@notadd/injection": "^2.3.23"
+        "@notadd/injection": "^2.3.23",
+        "chance": "^1.0.16",
+        "moment": "^2.22.1",
+        "request": "^2.87.0"
     },
     "bugs": {
         "url": "https://github.com/notadd/ts-addon-sms/issues"
