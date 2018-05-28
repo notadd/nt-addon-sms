@@ -31,7 +31,17 @@
         "typeorm": "^0.2.6"
     },
     "devDependencies": {
+        "@notadd/gulp-typescript": "~4.0.2",
         "@types/node": "^10.1.2",
+        "gulp": "^3.9.1",
+        "gulp-clang-format": "^1.0.23",
+        "gulp-nodemon": "^2.2.1",
+        "gulp-rename": "^1.2.2",
+        "gulp-sequence": "^0.4.6",
+        "gulp-sourcemaps": "^2.6.4",
+        "gulp-tslint": "^8.1.3",
+        "gulp-watch": "^4.3.11",
+        "lerna": "^2.5.1",
         "nodemon": "^1.17.5",
         "ts-node": "^6.0.3",
         "tslint": "^5.10.0",
