@@ -5,9 +5,6 @@
 # dependencies
 node_modules
 
-# outdir
-package
-
 # misc
 .DS_Store
 lerna-debug.log
