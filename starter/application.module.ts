@@ -17,7 +17,7 @@ export class ApplicationModule implements NestModule {
   }
 
   configure(consumer: MiddlewareConsumer) {
-    const typeDefs = this.graphQLFactory.mergeTypesByPaths("./**/*.graphql");
+    const typeDefs = this.graphQLFactory.mergeTypesByPaths("./**/*.types.graphql");
     const schema = this.graphQLFactory.createSchema({ typeDefs });
 
     consumer
