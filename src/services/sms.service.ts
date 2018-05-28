@@ -190,7 +190,7 @@ export class SmsService {
             throw new HttpException(`指定短信插件'appId=${smsRequest.appId}'不存在`, 400);
         } else {
             const existTemplate = await this.smsTemplateRepository.findOne(smsRequest.templateId);
-            if (!existTemplate) throw new HttpException(`指定短信模板'templateId=${smsRequest.templateId}'不存在`, 400);
+            if (!existTemplate) { throw new HttpException(`指定短信模板'templateId=${smsRequest.templateId}'不存在`, 400); }
 
             smsRequest.signName = existSms.signName;
             // 解密 appKey

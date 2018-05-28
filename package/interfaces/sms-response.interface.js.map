@@ -1,1 +1,1 @@
-{"version":3,"sources":["interfaces/sms-response.interface.ts"],"names":[],"mappings":"","file":"sms-response.interface.js","sourcesContent":["export interface SmsResponse {\n    code: number;\n\n    message: string;\n\n    validationCode: number;\n\n    validationTime: number;\n}"]}
+{"version":3,"sources":["../src/interfaces/sms-response.interface.ts"],"names":[],"mappings":"","file":"sms-response.interface.js","sourcesContent":["export interface SmsResponse {\n    code: number;\n\n    message: string;\n\n    validationCode: number;\n\n    validationTime: number;\n}\n"]}

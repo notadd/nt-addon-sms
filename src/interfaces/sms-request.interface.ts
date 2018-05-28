@@ -11,4 +11,3 @@ export interface SmsRequest {
 
     mobile: Array<string>;
 }
-
