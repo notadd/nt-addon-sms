@@ -9,7 +9,7 @@ const packages = {
     "sms": ts.createProject("src/tsconfig.json"),
 };
 
-const dist = "package";
+const dist = "packages";
 const source = "src";
 
 const modules = Object.keys(packages);

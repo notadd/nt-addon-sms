@@ -18,7 +18,7 @@
         "strict": false,
         "strictPropertyInitialization": false,
         "target": "es6",
-        "outDir": "package"
+        "outDir": "packages"
     },
     "include": [
         "src/*.ts",
