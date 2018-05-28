@@ -1,1 +1,1 @@
-# notadd-ext-sms
+# notadd-addon-sms
