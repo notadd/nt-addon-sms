@@ -46,7 +46,7 @@ export class SmsService {
         try {
             // 加密 appKey
             sms.appKey = await this.paramUtil.encryptor(sms.appId, sms.appKey);
-            await this.smsRepository.save(sms);
+            await this.smsRepository.save(this.smsRepository.create(sms));
         } catch (error) {
             throw new HttpException(`数据库错误：${error.toString()}`, 501);
         }
@@ -57,7 +57,7 @@ export class SmsService {
      * @param appId 短信插件id
      * @param smsTemplate 短信模板实体数组
      */
-    async addTemplateToSms(appId: number, smsTemplate: Array<SmsTemplate>): Promise<void> {
+    async addTemplateToSms(appId: string, smsTemplate: Array<SmsTemplate>): Promise<void> {
         const existSms: Sms | undefined = await this.smsRepository.findOne(appId);
         if (!existSms) {
             throw new HttpException(`指定短信插件'appId=${appId}'不存在`, 400);
@@ -132,7 +132,7 @@ export class SmsService {
      * @param name 模板标示
      * @param remark 模板备注
      */
-    async updateSmsTemplate(templateId: string, name: string, remark: string): Promise<void> {
+    async updateSmsTemplate(templateId: number, name: string, remark: string): Promise<void> {
         const existTemplate: SmsTemplate | undefined = await this.smsTemplateRepository.findOne(templateId);
         if (!existTemplate) {
             throw new HttpException(`指定短信模板'templateId=${templateId}'不存在`, 400);
@@ -165,7 +165,7 @@ export class SmsService {
      * 查询指定 templateId 的短信发送记录
      * @param templateId 短信模板id
      */
-    async findOneSmsLog(templateId: string): Promise<Array<SmsLog>> {
+    async findOneSmsLog(templateId: number): Promise<Array<SmsLog>> {
         const existTemplate: SmsTemplate | undefined = await this.smsTemplateRepository.findOne(templateId);
         if (!existTemplate) {
             throw new HttpException(`指定短信模板'templateId=${templateId}'不存在`, 400);

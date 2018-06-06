@@ -11,7 +11,7 @@ export class SmsTemplate {
     @PrimaryColumn({
         name: "template_id"
     })
-    templateId: string;
+    templateId: number;
 
     /**
      * 模板标识

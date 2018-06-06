@@ -17,7 +17,7 @@ export interface SmsData {
 }
 
 export interface SmsTemplateData {
-    templateId: string;
+    templateId: number;
 
     name: string;
 

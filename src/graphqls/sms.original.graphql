@@ -1,29 +1,29 @@
 type Query {
     # 发送短信
     sendMessage(smsRequest: SmsRequest!): SmsResponse
-    # 查询指定 appId 的短信插件信息
-    smsInfo(appId: String!): SmsInfo
     # 查询所有短信插件信息
-    smsInfos: SmsInfo
-    # 查询指定 templateId 的短信发送记录
-    smsLog(templateId: String!): SmsLogInfo
+    findAllSmsInfo: SmsInfo
+    # 查询指定 appId 的短信插件信息
+    findSmsInfo(appId: String!): SmsInfo
     # 查询所有短信发送记录
-    smsLogs: SmsLogInfo
+    findAllSmsLog: SmsLogInfo
+    # 查询指定 templateId 的短信发送记录
+    findSmsLog(templateId: Int!): SmsLogInfo
 }
 
 type Mutation {
     # 创建短信插件
-    createSms(sms: Sms): Result
+    createSms(sms: Sms): MutationResult
     # 增加短信模板
-    addTemplateToSms(appId: String!, smsTemplate: [SmsTemplate]!): Result
+    addTemplateToSms(appId: String!, smsTemplate: [SmsTemplate]!): MutationResult
     # 删除短信插件
-    deleteSms(appId: String!): Result
+    deleteSms(appId: String!): MutationResult
     # 删除短信模板
-    deleteSmsTemplate(templateId: String!): Result
+    deleteSmsTemplate(templateId: Int!): MutationResult
     # 更新短信插件
-    updateSms(appId: String!, signName: String!, validationTime: Int!): Result
+    updateSms(appId: String!, signName: String!, validationTime: Int!): MutationResult
     # 更新短信模板
-    updateSmsTemplate(templateId: String!, name: String!, remark: String!): Result
+    updateSmsTemplate(templateId: Int!, name: String!, remark: String!): MutationResult
 }
 
 # 腾讯云发送返回数据
@@ -73,7 +73,7 @@ type SmsData {
 # 短信模板数据
 type SmsTemplateData {
     # 模板ID
-    templateId: String
+    templateId: Int
     # 模板标识
     name: String
     # 模板备注
@@ -116,7 +116,7 @@ input Sms {
 # 短信模板信息
 input SmsTemplate {
     # 云服务申请的模板ID
-    templateId: String
+    templateId: Int
     # 模板标识
     name: String
     # 备注
@@ -128,7 +128,7 @@ input SmsRequest {
     # 短信插件ID
     appId: String
     # 模板
-    templateId: String
+    templateId: Int
     # 用户手机号
     mobile: [String]
 }
