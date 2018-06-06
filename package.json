@@ -2,14 +2,13 @@
     "name": "ext-sms",
     "version": "1.0.0",
     "description": "Notadd 短信验证码插件",
-    "main": "index.ts",
     "scripts": {
         "build": "node --max_old_space_size=4096 ./node_modules/gulp/bin/gulp.js build",
         "fix": "tslint -p tsconfig.json -c tslint.json --fix",
         "prepublish": "node --max_old_space_size=4096 ./node_modules/gulp/bin/gulp.js build",
         "publish": "node ./node_modules/lerna/bin/lerna.js publish -m \"chore(release): publish %s\"",
         "start": "node ./starter/index.js",
-        "start:watch": "nodemon",
+        "start:dev": "nodemon",
         "check": "tslint -p tsconfig.json -c tslint.json"
     },
     "author": "dzzzzzy",
