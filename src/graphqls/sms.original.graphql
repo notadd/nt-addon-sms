@@ -1,6 +1,8 @@
 type Query {
-    # 发送短信
-    sendMessage(smsRequest: SmsRequest!): SmsResponse
+    # 发送短信，type是短信类型只能传0或1，0为通知类短信(无参数)，1为验证码类短信(有参数)
+    sendMessage(type: Int!, smsRequest: SmsRequest!): SmsCommonResult
+    # 校验验证码合法性
+    smsValidator(templateId: Int!, validationCode: Int!): SmsCommonResult
     # 查询所有短信插件信息
     findAllSmsInfo: SmsInfo
     # 查询指定 appId 的短信插件信息
@@ -13,17 +15,17 @@ type Query {
 
 type Mutation {
     # 创建短信插件
-    createSms(sms: Sms): MutationResult
+    createSms(sms: Sms): SmsCommonResult
     # 增加短信模板
-    addTemplateToSms(appId: String!, smsTemplate: [SmsTemplate]!): MutationResult
+    addTemplateToSms(appId: String!, smsTemplate: [SmsTemplate]!): SmsCommonResult
     # 删除短信插件
-    deleteSms(appId: String!): MutationResult
+    deleteSms(appId: String!): SmsCommonResult
     # 删除短信模板
-    deleteSmsTemplate(templateId: Int!): MutationResult
+    deleteSmsTemplate(templateId: Int!): SmsCommonResult
     # 更新短信插件
-    updateSms(appId: String!, signName: String!, validationTime: Int!): MutationResult
+    updateSms(appId: String!, signName: String!, validationTime: Int!): SmsCommonResult
     # 更新短信模板
-    updateSmsTemplate(templateId: Int!, name: String!, remark: String!): MutationResult
+    updateSmsTemplate(templateId: Int!, name: String!, remark: String!): SmsCommonResult
 }
 
 # 腾讯云发送返回数据
@@ -32,10 +34,6 @@ type SmsResponse {
     code: Int
     # 返回消息
     message: String
-    # 验证码
-    validationCode: Int
-    # 验证码有效期
-    validationTime: Int
 }
 
 # 短信插件信息

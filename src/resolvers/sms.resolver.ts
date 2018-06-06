@@ -5,7 +5,6 @@ import { SmsTemplate } from "../entities/sms-template.entity";
 import { Sms } from "../entities/sms.entity";
 import { SmsInfo } from "../interfaces/sms-info.interface";
 import { SmsLogInfo } from "../interfaces/sms-log-info.interface";
-import { SmsResponse } from "../interfaces/sms-response.interface";
 import { SmsService } from "../services/sms.service";
 
 @Resolver()
@@ -38,8 +37,16 @@ export class SmsResolver {
     }
 
     @Query("sendMessage")
-    async sendMessage(req, body): Promise<SmsResponse> {
-        return this.smsService.sendMessageByQCloud(body.smsRequest);
+    async sendMessage(req, body): Promise<{ code: number, message: string }> {
+        return this.smsService.sendMessageByQCloud(body.type, body.smsRequest);
+    }
+
+    @Query("smsValidator")
+    async smsValidator(req, body: { templateId: number, validationCode: number }): Promise<{}> {
+        const isSuccess = await this.smsService.validator(body.templateId, body.validationCode);
+        const code = isSuccess ? 200 : 406;
+        const message = isSuccess ? "验证通过" : "验证不通过";
+        return { code, message };
     }
 
     @Mutation("createSms")

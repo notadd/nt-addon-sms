@@ -8,7 +8,6 @@ import { SmsTemplate } from "../entities/sms-template.entity";
 import { Sms } from "../entities/sms.entity";
 import { SmsLogData } from "../interfaces/sms-log-info.interface";
 import { SmsRequest } from "../interfaces/sms-request.interface";
-import { SmsResponse } from "../interfaces/sms-response.interface";
 import { ParamUtil } from "../utils/param.util";
 import { QcloudService } from "./qcloud.service";
 
@@ -189,9 +188,11 @@ export class SmsService {
 
     /**
      * 发送短信，并保存短信发送记录
+     *
+     * @param type 短信类型 0为通知类短信(无参数)，1为验证码类短信(有参数)
      * @param smsRequest 发送短信请求体
      */
-    async sendMessageByQCloud(smsRequest: SmsRequest): Promise<SmsResponse> {
+    async sendMessageByQCloud(type: 0 | 1, smsRequest: SmsRequest): Promise<{ code: number, message: string }> {
         const existSms = await this.smsRepository.findOne(smsRequest.appId);
         if (!existSms) {
             throw new HttpException(`指定短信插件'appId=${smsRequest.appId}'不存在`, 400);
@@ -202,10 +203,18 @@ export class SmsService {
             smsRequest.signName = existSms.signName;
             // 解密 appKey
             smsRequest.appKey = await this.paramUtil.decryptor(existSms.appId, existSms.appKey);
-            // 生成验证码，传递有效时间
-            const validationCode = await this.paramUtil.genValidationCode();
-            const validationTime = existSms.validationTime;
-            smsRequest.templateParam = [`${validationCode}`, `${validationTime}`];
+
+            let validationCode;
+            let validationTime;
+            smsRequest.templateParam = [];
+            // 验证码类短信才有验证码和有效时间
+            if (type === 1) {
+                // 生成验证码，传递有效时间
+                validationCode = await this.paramUtil.genValidationCode();
+                validationTime = existSms.validationTime;
+                smsRequest.templateParam = [`${validationCode}`, `${validationTime}`];
+            }
+
             // 发送短信，调用腾讯云短信服务接口，保存 response 返回的消息和状态码
             await this.qcloudService.sendSms(smsRequest).then(resolve => {
                 this.saveSmsLog(true, resolve.code, resolve.message, smsRequest, new SmsLog());
@@ -214,8 +223,30 @@ export class SmsService {
                 this.saveSmsLog(false, rejectCode, reject.message, smsRequest, new SmsLog());
                 throw new HttpException(`发送失败，原因：${reject.message}`, rejectCode);
             });
-            return { code: 200, message: "发送短信成功", validationCode, validationTime };
+
+            return { code: 200, message: "发送短信成功" };
         }
+    }
+
+    /**
+     * 校验验证码合法性
+     *
+     * @param templateId 发送短信的模板ID
+     * @param validationCode 验证码
+     */
+    async validator(templateId: number, validationCode: number): Promise<boolean> {
+        const exist = await this.smsLogRepository.findOne(templateId, { relations: ["sms"] });
+
+        if (!exist) {
+            throw new HttpException(`短信模板ID：${templateId}，不存在`, 404);
+        }
+
+        // 如果当前时间大于有效时间(发送时间+有效期)
+        if (moment().isAfter(moment(exist.sendTime, "YYYY-MM-DD HH:mm:ss").add(exist.validationTime, "m"))) {
+            throw new HttpException("验证超时", 408);
+        }
+
+        return validationCode === exist.validationCode;
     }
 
     /**
@@ -229,9 +260,12 @@ export class SmsService {
     private async saveSmsLog(isSuccess: boolean, responseCode: string, responseMessage: string, smsRequest: SmsRequest, smsLog: SmsLog) {
         // 保存接收短信的手机号
         smsLog.targetMobile = smsRequest.mobile.join();
-        // 短信验证码及有效期
-        smsLog.validationCode = parseInt(smsRequest.templateParam[0]);
-        smsLog.validationTime = parseInt(smsRequest.templateParam[1]);
+        // 保存验证码类短信的验证码和有效期
+        if (smsRequest.templateParam.length !== 0) {
+            // 短信验证码及有效期
+            smsLog.validationCode = parseInt(smsRequest.templateParam[0]);
+            smsLog.validationTime = parseInt(smsRequest.templateParam[1]);
+        }
         // 是否发送成功
         smsLog.isSuccess = isSuccess;
         smsLog.responseCode = responseCode;
