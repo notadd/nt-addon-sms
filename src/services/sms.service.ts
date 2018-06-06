@@ -210,8 +210,9 @@ export class SmsService {
             await this.qcloudService.sendSms(smsRequest).then(resolve => {
                 this.saveSmsLog(true, resolve.code, resolve.message, smsRequest, new SmsLog());
             }).catch(reject => {
-                this.saveSmsLog(false, reject.code, reject.message, smsRequest, new SmsLog());
-                throw new HttpException(`发送失败，原因：${reject.message}`, reject.code);
+                const rejectCode = reject.code ? reject.code : 500;
+                this.saveSmsLog(false, rejectCode, reject.message, smsRequest, new SmsLog());
+                throw new HttpException(`发送失败，原因：${reject.message}`, rejectCode);
             });
             return { code: 200, message: "发送短信成功", validationCode, validationTime };
         }
