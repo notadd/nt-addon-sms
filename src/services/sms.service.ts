@@ -1,7 +1,7 @@
 import { HttpException, Inject, Injectable } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import * as moment from "moment";
-import { Repository } from "typeorm";
+import { getConnection, Repository } from "typeorm";
 
 import { SmsLog } from "../entities/sms-log.entity";
 import { SmsTemplate } from "../entities/sms-template.entity";
@@ -68,10 +68,17 @@ export class SmsService {
         if (sameTemplateId.length !== 0) {
             throw new HttpException(`存在相同模板templateId='[${sameTemplateId.toString()}]'`, 400);
         }
+        // 获取连接开启事务
+        const queryRunner = getConnection().createQueryRunner();
+        await queryRunner.startTransaction();
         try {
-            const newSmsTemplate = await this.smsTemplateRepository.save(smsTemplate);
-            await this.smsRepository.createQueryBuilder().relation(Sms, "templates").of(existSms).add(newSmsTemplate);
+            const newSmsTemplate = await queryRunner.manager.save(smsTemplate);
+            await queryRunner.manager.createQueryBuilder().relation(Sms, "templates").of(existSms).add(newSmsTemplate);
+            // 提交事务
+            await queryRunner.commitTransaction();
         } catch (error) {
+            // 发生错误时，回滚
+            await queryRunner.rollbackTransaction();
             throw new HttpException(`数据库错误：${error.toString()}`, 501);
         }
     }
@@ -230,7 +237,18 @@ export class SmsService {
         smsLog.responseMessage = responseMessage;
         // 发送时间
         smsLog.sendTime = moment().format("YYYY-MM-DD HH:mm:ss");
-        const newLog = await this.smsLogRepository.save(smsLog);
-        this.smsTemplateRepository.createQueryBuilder().relation(SmsTemplate, "smsLogs").of(smsRequest.templateId).add(newLog);
+        // 获取连接开启事务
+        const queryRunner = getConnection().createQueryRunner();
+        await queryRunner.startTransaction();
+        try {
+            const newLog = await queryRunner.manager.save(smsLog);
+            await queryRunner.manager.createQueryBuilder().relation(SmsTemplate, "smsLogs").of(smsRequest.templateId).add(newLog);
+            // 提交事务
+            await queryRunner.commitTransaction();
+        } catch (error) {
+            // 发生错误时，回滚
+            await queryRunner.rollbackTransaction();
+            throw new HttpException(`数据库错误：${error.toString()}`, 501);
+        }
     }
 }

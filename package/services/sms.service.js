@@ -71,11 +71,15 @@ let SmsService = class SmsService {
             if (sameTemplateId.length !== 0) {
                 throw new common_1.HttpException(`存在相同模板templateId='[${sameTemplateId.toString()}]'`, 400);
             }
+            const queryRunner = typeorm_2.getConnection().createQueryRunner();
+            yield queryRunner.startTransaction();
             try {
-                const newSmsTemplate = yield this.smsTemplateRepository.save(smsTemplate);
-                yield this.smsRepository.createQueryBuilder().relation(sms_entity_1.Sms, "templates").of(existSms).add(newSmsTemplate);
+                const newSmsTemplate = yield queryRunner.manager.save(smsTemplate);
+                yield queryRunner.manager.createQueryBuilder().relation(sms_entity_1.Sms, "templates").of(existSms).add(newSmsTemplate);
+                yield queryRunner.commitTransaction();
             }
             catch (error) {
+                yield queryRunner.rollbackTransaction();
                 throw new common_1.HttpException(`数据库错误：${error.toString()}`, 501);
             }
         });
@@ -198,8 +202,17 @@ let SmsService = class SmsService {
             smsLog.responseCode = responseCode;
             smsLog.responseMessage = responseMessage;
             smsLog.sendTime = moment().format("YYYY-MM-DD HH:mm:ss");
-            const newLog = yield this.smsLogRepository.save(smsLog);
-            this.smsTemplateRepository.createQueryBuilder().relation(sms_template_entity_1.SmsTemplate, "smsLogs").of(smsRequest.templateId).add(newLog);
+            const queryRunner = typeorm_2.getConnection().createQueryRunner();
+            yield queryRunner.startTransaction();
+            try {
+                const newLog = yield queryRunner.manager.save(smsLog);
+                yield queryRunner.manager.createQueryBuilder().relation(sms_template_entity_1.SmsTemplate, "smsLogs").of(smsRequest.templateId).add(newLog);
+                yield queryRunner.commitTransaction();
+            }
+            catch (error) {
+                yield queryRunner.rollbackTransaction();
+                throw new common_1.HttpException(`数据库错误：${error.toString()}`, 501);
+            }
         });
     }
 };
