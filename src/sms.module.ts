@@ -5,6 +5,7 @@ import { SmsController } from "./controllers/sms.controller";
 import { SmsLog } from "./entities/sms-log.entity";
 import { SmsTemplate } from "./entities/sms-template.entity";
 import { Sms } from "./entities/sms.entity";
+import { SmsComponentProvider } from "./exports/sms.component.provider";
 import { SmsResolver } from "./resolvers/sms.resolver";
 import { QcloudService } from "./services/qcloud.service";
 import { SmsService } from "./services/sms.service";
@@ -20,7 +21,9 @@ import { ParamUtil } from "./utils/param.util";
         QcloudService,
         SmsResolver,
         SmsService,
-    ]
+        SmsComponentProvider,
+    ],
+    exports: [SmsComponentProvider]
 })
 
 export class SmsModule { }
