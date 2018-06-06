@@ -5,7 +5,7 @@ export interface SmsRequest {
 
     signName: string;
 
-    templateId: string;
+    templateId: number;
 
     templateParam: Array<string>;
 

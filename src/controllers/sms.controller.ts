@@ -10,7 +10,7 @@ export class SmsController {
 
     /**
      * 发送短信接口
-     * @param body json: { "appId": "", "templateId": "", "mobile": [""] }
+     * @param body example: { "appId": "1234567890", "templateId": 123456, "mobile": ["13512345678"] }
      */
     @Post("sendMessage")
     async sendMessage(@Body() body: SmsRequest): Promise<SmsResponse> {
