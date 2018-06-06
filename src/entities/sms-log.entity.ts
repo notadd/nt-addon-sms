@@ -35,7 +35,8 @@ export class SmsLog {
      * 短信验证码
      */
     @Column({
-        name: "validation_code"
+        name: "validation_code",
+        nullable: true
     })
     validationCode: number;
 
@@ -43,7 +44,8 @@ export class SmsLog {
      * 验证码有效期
      */
     @Column({
-        name: "validation_time"
+        name: "validation_time",
+        nullable: true
     })
     validationTime: number;
 
