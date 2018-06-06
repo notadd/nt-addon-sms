@@ -167,7 +167,7 @@ let SmsService = class SmsService {
             return this.smsLogRepository.find();
         });
     }
-    sendMessageByQCloud(smsRequest) {
+    sendMessageByQCloud(type, smsRequest) {
         return __awaiter(this, void 0, void 0, function* () {
             const existSms = yield this.smsRepository.findOne(smsRequest.appId);
             if (!existSms) {
@@ -180,9 +180,14 @@ let SmsService = class SmsService {
                 }
                 smsRequest.signName = existSms.signName;
                 smsRequest.appKey = yield this.paramUtil.decryptor(existSms.appId, existSms.appKey);
-                const validationCode = yield this.paramUtil.genValidationCode();
-                const validationTime = existSms.validationTime;
-                smsRequest.templateParam = [`${validationCode}`, `${validationTime}`];
+                let validationCode;
+                let validationTime;
+                smsRequest.templateParam = [];
+                if (type === 1) {
+                    validationCode = yield this.paramUtil.genValidationCode();
+                    validationTime = existSms.validationTime;
+                    smsRequest.templateParam = [`${validationCode}`, `${validationTime}`];
+                }
                 yield this.qcloudService.sendSms(smsRequest).then(resolve => {
                     this.saveSmsLog(true, resolve.code, resolve.message, smsRequest, new sms_log_entity_1.SmsLog());
                 }).catch(reject => {
@@ -190,15 +195,29 @@ let SmsService = class SmsService {
                     this.saveSmsLog(false, rejectCode, reject.message, smsRequest, new sms_log_entity_1.SmsLog());
                     throw new common_1.HttpException(`发送失败，原因：${reject.message}`, rejectCode);
                 });
-                return { code: 200, message: "发送短信成功", validationCode, validationTime };
+                return { code: 200, message: "发送短信成功" };
             }
+        });
+    }
+    validator(templateId, validationCode) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const exist = yield this.smsLogRepository.findOne(templateId, { relations: ["sms"] });
+            if (!exist) {
+                throw new common_1.HttpException(`短信模板ID：${templateId}，不存在`, 404);
+            }
+            if (moment().isAfter(moment(exist.sendTime, "YYYY-MM-DD HH:mm:ss").add(exist.validationTime, "m"))) {
+                throw new common_1.HttpException("验证超时", 408);
+            }
+            return validationCode === exist.validationCode;
         });
     }
     saveSmsLog(isSuccess, responseCode, responseMessage, smsRequest, smsLog) {
         return __awaiter(this, void 0, void 0, function* () {
             smsLog.targetMobile = smsRequest.mobile.join();
-            smsLog.validationCode = parseInt(smsRequest.templateParam[0]);
-            smsLog.validationTime = parseInt(smsRequest.templateParam[1]);
+            if (smsRequest.templateParam.length !== 0) {
+                smsLog.validationCode = parseInt(smsRequest.templateParam[0]);
+                smsLog.validationTime = parseInt(smsRequest.templateParam[1]);
+            }
             smsLog.isSuccess = isSuccess;
             smsLog.responseCode = responseCode;
             smsLog.responseMessage = responseMessage;

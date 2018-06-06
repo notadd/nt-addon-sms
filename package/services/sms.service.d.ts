@@ -4,7 +4,6 @@ import { SmsTemplate } from "../entities/sms-template.entity";
 import { Sms } from "../entities/sms.entity";
 import { SmsLogData } from "../interfaces/sms-log-info.interface";
 import { SmsRequest } from "../interfaces/sms-request.interface";
-import { SmsResponse } from "../interfaces/sms-response.interface";
 import { ParamUtil } from "../utils/param.util";
 import { QcloudService } from "./qcloud.service";
 export declare class SmsService {
@@ -24,6 +23,10 @@ export declare class SmsService {
     findAllSms(): Promise<Array<Sms>>;
     findOneSmsLog(templateId: number): Promise<Array<SmsLog>>;
     findAllSmsLog(): Promise<Array<SmsLogData>>;
-    sendMessageByQCloud(smsRequest: SmsRequest): Promise<SmsResponse>;
+    sendMessageByQCloud(type: 0 | 1, smsRequest: SmsRequest): Promise<{
+        code: number;
+        message: string;
+    }>;
+    validator(templateId: number, validationCode: number): Promise<boolean>;
     private saveSmsLog(isSuccess, responseCode, responseMessage, smsRequest, smsLog);
 }

@@ -2,7 +2,6 @@ import { SmsTemplate } from "../entities/sms-template.entity";
 import { Sms } from "../entities/sms.entity";
 import { SmsInfo } from "../interfaces/sms-info.interface";
 import { SmsLogInfo } from "../interfaces/sms-log-info.interface";
-import { SmsResponse } from "../interfaces/sms-response.interface";
 import { SmsService } from "../services/sms.service";
 export declare class SmsResolver {
     private readonly smsService;
@@ -15,7 +14,14 @@ export declare class SmsResolver {
     findOneSmsLog(req: any, body: {
         templateId: number;
     }): Promise<SmsLogInfo>;
-    sendMessage(req: any, body: any): Promise<SmsResponse>;
+    sendMessage(req: any, body: any): Promise<{
+        code: number;
+        message: string;
+    }>;
+    smsValidator(req: any, body: {
+        templateId: number;
+        validationCode: number;
+    }): Promise<{}>;
     createSms(req: any, body: {
         sms: Sms;
     }): Promise<{}>;

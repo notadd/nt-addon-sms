@@ -40,13 +40,15 @@ __decorate([
 ], SmsLog.prototype, "smsTemplate", void 0);
 __decorate([
     typeorm_1.Column({
-        name: "validation_code"
+        name: "validation_code",
+        nullable: true
     }),
     __metadata("design:type", Number)
 ], SmsLog.prototype, "validationCode", void 0);
 __decorate([
     typeorm_1.Column({
-        name: "validation_time"
+        name: "validation_time",
+        nullable: true
     }),
     __metadata("design:type", Number)
 ], SmsLog.prototype, "validationTime", void 0);

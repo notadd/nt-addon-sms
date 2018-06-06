@@ -28,7 +28,18 @@ let SmsController = class SmsController {
     }
     sendMessage(body) {
         return __awaiter(this, void 0, void 0, function* () {
-            return this.smsService.sendMessageByQCloud(body);
+            if (body.type === 0 || body.type === 1) {
+                return this.smsService.sendMessageByQCloud(body.type, body.smsRequest);
+            }
+            return { code: 406, message: "type参数有误，0为通知类短信(模板无参数)，1为验证码类短信(模板有参数)" };
+        });
+    }
+    smsValidator(body) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const isSuccess = yield this.smsService.validator(body.templateId, body.validationCode);
+            const code = isSuccess ? 200 : 406;
+            const message = isSuccess ? "验证通过" : "验证不通过";
+            return { code, message };
         });
     }
 };
@@ -39,6 +50,13 @@ __decorate([
     __metadata("design:paramtypes", [Object]),
     __metadata("design:returntype", Promise)
 ], SmsController.prototype, "sendMessage", null);
+__decorate([
+    common_1.Post("smsValidator"),
+    __param(0, common_1.Body()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], SmsController.prototype, "smsValidator", null);
 SmsController = __decorate([
     common_1.Controller("sms"),
     __param(0, common_1.Inject(sms_service_1.SmsService)),

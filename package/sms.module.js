@@ -12,6 +12,7 @@ const sms_controller_1 = require("./controllers/sms.controller");
 const sms_log_entity_1 = require("./entities/sms-log.entity");
 const sms_template_entity_1 = require("./entities/sms-template.entity");
 const sms_entity_1 = require("./entities/sms.entity");
+const sms_component_provider_1 = require("./exports/sms.component.provider");
 const sms_resolver_1 = require("./resolvers/sms.resolver");
 const qcloud_service_1 = require("./services/qcloud.service");
 const sms_service_1 = require("./services/sms.service");
@@ -29,7 +30,9 @@ SmsModule = __decorate([
             qcloud_service_1.QcloudService,
             sms_resolver_1.SmsResolver,
             sms_service_1.SmsService,
-        ]
+            sms_component_provider_1.SmsComponentProvider,
+        ],
+        exports: [sms_component_provider_1.SmsComponentProvider]
     })
 ], SmsModule);
 exports.SmsModule = SmsModule;

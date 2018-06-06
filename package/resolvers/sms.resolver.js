@@ -53,7 +53,15 @@ let SmsResolver = class SmsResolver {
     }
     sendMessage(req, body) {
         return __awaiter(this, void 0, void 0, function* () {
-            return this.smsService.sendMessageByQCloud(body.smsRequest);
+            return this.smsService.sendMessageByQCloud(body.type, body.smsRequest);
+        });
+    }
+    smsValidator(req, body) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const isSuccess = yield this.smsService.validator(body.templateId, body.validationCode);
+            const code = isSuccess ? 200 : 406;
+            const message = isSuccess ? "验证通过" : "验证不通过";
+            return { code, message };
         });
     }
     createSms(req, body) {
@@ -123,6 +131,12 @@ __decorate([
     __metadata("design:paramtypes", [Object, Object]),
     __metadata("design:returntype", Promise)
 ], SmsResolver.prototype, "sendMessage", null);
+__decorate([
+    graphql_1.Query("smsValidator"),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object, Object]),
+    __metadata("design:returntype", Promise)
+], SmsResolver.prototype, "smsValidator", null);
 __decorate([
     graphql_1.Mutation("createSms"),
     __metadata("design:type", Function),
