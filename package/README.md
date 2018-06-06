@@ -9,5 +9,5 @@ yarn install
 # run start
 yarn run start
 
-# run dev
+# run start dev
 yarn run start:dev
