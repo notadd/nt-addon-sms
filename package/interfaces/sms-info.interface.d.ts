@@ -10,7 +10,7 @@ export interface SmsData {
     validationTime: number;
 }
 export interface SmsTemplateData {
-    templateId: string;
+    templateId: number;
     name: string;
     remark: string;
 }

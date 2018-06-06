@@ -18,7 +18,7 @@ __decorate([
     typeorm_1.PrimaryColumn({
         name: "template_id"
     }),
-    __metadata("design:type", String)
+    __metadata("design:type", Number)
 ], SmsTemplate.prototype, "templateId", void 0);
 __decorate([
     typeorm_1.Column({

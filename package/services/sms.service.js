@@ -53,7 +53,7 @@ let SmsService = class SmsService {
             }
             try {
                 sms.appKey = yield this.paramUtil.encryptor(sms.appId, sms.appKey);
-                yield this.smsRepository.save(sms);
+                yield this.smsRepository.save(this.smsRepository.create(sms));
             }
             catch (error) {
                 throw new common_1.HttpException(`数据库错误：${error.toString()}`, 501);

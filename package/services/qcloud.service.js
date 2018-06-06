@@ -50,7 +50,7 @@ let QcloudService = class QcloudService {
                 sig,
                 time,
                 sign: smsRequest.signName,
-                tpl_id: parseInt(smsRequest.templateId),
+                tpl_id: smsRequest.templateId,
                 params: smsRequest.templateParam,
                 tel: mobile
             });

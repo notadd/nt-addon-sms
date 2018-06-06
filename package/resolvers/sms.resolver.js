@@ -27,136 +27,136 @@ let SmsResolver = class SmsResolver {
     constructor(smsService) {
         this.smsService = smsService;
     }
-    findAllSms(obj, args, context, info) {
+    findAllSms() {
         return __awaiter(this, void 0, void 0, function* () {
             const sms = yield this.smsService.findAllSms();
             return { code: 200, message: "获取所有短信插件信息成功", data: sms };
         });
     }
-    findOneSms(obj, args, context, info) {
+    findOneSms(req, body) {
         return __awaiter(this, void 0, void 0, function* () {
-            const sms = yield this.smsService.findOneSms(args.appId);
+            const sms = yield this.smsService.findOneSms(body.appId);
             return { code: 200, message: "获取短信插件信息成功", data: [sms] };
         });
     }
-    findAllSmsLog(obj, args, context, info) {
+    findAllSmsLog() {
         return __awaiter(this, void 0, void 0, function* () {
             const smsLog = yield this.smsService.findAllSmsLog();
             return { code: 200, message: "获取所有短信发送记录成功", data: smsLog };
         });
     }
-    findOneSmsLog(obj, args, context, info) {
+    findOneSmsLog(req, body) {
         return __awaiter(this, void 0, void 0, function* () {
-            const smsLog = yield this.smsService.findOneSmsLog(args.templateId);
+            const smsLog = yield this.smsService.findOneSmsLog(body.templateId);
             return { code: 200, message: "获取短信发送记录成功", data: smsLog };
         });
     }
-    sendMessage(obj, args, context, info) {
+    sendMessage(req, body) {
         return __awaiter(this, void 0, void 0, function* () {
-            return this.smsService.sendMessageByQCloud(args.smsRequest);
+            return this.smsService.sendMessageByQCloud(body.smsRequest);
         });
     }
-    createSms(obj, args, context, info) {
+    createSms(req, body) {
         return __awaiter(this, void 0, void 0, function* () {
-            yield this.smsService.createSms(args.sms);
+            yield this.smsService.createSms(body.sms);
             return { code: 200, message: "创建短信插件成功" };
         });
     }
-    addTemplateToSms(obj, args, context, info) {
+    addTemplateToSms(req, body) {
         return __awaiter(this, void 0, void 0, function* () {
-            yield this.smsService.addTemplateToSms(args.appId, args.smsTemplate);
+            yield this.smsService.addTemplateToSms(body.appId, body.smsTemplate);
             return { code: 200, message: "增加模板成功" };
         });
     }
-    deleteSms(obj, args, context, info) {
+    deleteSms(req, body) {
         return __awaiter(this, void 0, void 0, function* () {
-            yield this.smsService.deleteSms(args.appId);
+            yield this.smsService.deleteSms(body.appId);
             return { code: 200, message: "删除短信插件成功" };
         });
     }
-    deleteSmsTemplate(obj, args, context, info) {
+    deleteSmsTemplate(req, body) {
         return __awaiter(this, void 0, void 0, function* () {
-            yield this.smsService.deleteSmsTemplate(args.templateId);
+            yield this.smsService.deleteSmsTemplate(body.templateId);
             return { code: 200, message: "删除模板成功" };
         });
     }
-    updateSms(obj, args, context, info) {
+    updateSms(req, body) {
         return __awaiter(this, void 0, void 0, function* () {
-            yield this.smsService.updateSms(args.appId, args.signName, args.validationTime);
+            yield this.smsService.updateSms(body.appId, body.signName, body.validationTime);
             return { code: 200, message: "更新短信插件成功" };
         });
     }
-    updateSmsTemplate(obj, args, context, info) {
+    updateSmsTemplate(req, body) {
         return __awaiter(this, void 0, void 0, function* () {
-            yield this.smsService.updateSmsTemplate(args.templateId, args.name, args.remark);
+            yield this.smsService.updateSmsTemplate(body.templateId, body.name, body.remark);
             return { code: 200, message: "更新短信模板成功" };
         });
     }
 };
 __decorate([
-    graphql_1.Query("smsInfos"),
+    graphql_1.Query("findAllSmsInfo"),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object, Object, Object, Object]),
+    __metadata("design:paramtypes", []),
     __metadata("design:returntype", Promise)
 ], SmsResolver.prototype, "findAllSms", null);
 __decorate([
-    graphql_1.Query("smsInfo"),
+    graphql_1.Query("findSmsInfo"),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object, Object, Object, Object]),
+    __metadata("design:paramtypes", [Object, Object]),
     __metadata("design:returntype", Promise)
 ], SmsResolver.prototype, "findOneSms", null);
 __decorate([
-    graphql_1.Query("smsLogs"),
+    graphql_1.Query("findAllSmsLog"),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object, Object, Object, Object]),
+    __metadata("design:paramtypes", []),
     __metadata("design:returntype", Promise)
 ], SmsResolver.prototype, "findAllSmsLog", null);
 __decorate([
-    graphql_1.Query("smsLog"),
+    graphql_1.Query("findSmsLog"),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object, Object, Object, Object]),
+    __metadata("design:paramtypes", [Object, Object]),
     __metadata("design:returntype", Promise)
 ], SmsResolver.prototype, "findOneSmsLog", null);
 __decorate([
     graphql_1.Query("sendMessage"),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object, Object, Object, Object]),
+    __metadata("design:paramtypes", [Object, Object]),
     __metadata("design:returntype", Promise)
 ], SmsResolver.prototype, "sendMessage", null);
 __decorate([
     graphql_1.Mutation("createSms"),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object, Object, Object, Object]),
+    __metadata("design:paramtypes", [Object, Object]),
     __metadata("design:returntype", Promise)
 ], SmsResolver.prototype, "createSms", null);
 __decorate([
     graphql_1.Mutation("addTemplateToSms"),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object, Object, Object, Object]),
+    __metadata("design:paramtypes", [Object, Object]),
     __metadata("design:returntype", Promise)
 ], SmsResolver.prototype, "addTemplateToSms", null);
 __decorate([
     graphql_1.Mutation("deleteSms"),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object, Object, Object, Object]),
+    __metadata("design:paramtypes", [Object, Object]),
     __metadata("design:returntype", Promise)
 ], SmsResolver.prototype, "deleteSms", null);
 __decorate([
     graphql_1.Mutation("deleteSmsTemplate"),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object, Object, Object, Object]),
+    __metadata("design:paramtypes", [Object, Object]),
     __metadata("design:returntype", Promise)
 ], SmsResolver.prototype, "deleteSmsTemplate", null);
 __decorate([
     graphql_1.Mutation("updateSms"),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object, Object, Object, Object]),
+    __metadata("design:paramtypes", [Object, Object]),
     __metadata("design:returntype", Promise)
 ], SmsResolver.prototype, "updateSms", null);
 __decorate([
     graphql_1.Mutation("updateSmsTemplate"),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object, Object, Object, Object]),
+    __metadata("design:paramtypes", [Object, Object]),
     __metadata("design:returntype", Promise)
 ], SmsResolver.prototype, "updateSmsTemplate", null);
 SmsResolver = __decorate([

@@ -15,14 +15,14 @@ export declare class SmsService {
     private readonly smsLogRepository;
     constructor(qcloudService: QcloudService, paramUtil: ParamUtil, smsRepository: Repository<Sms>, smsTemplateRepository: Repository<SmsTemplate>, smsLogRepository: Repository<SmsLog>);
     createSms(sms: Sms): Promise<void>;
-    addTemplateToSms(appId: number, smsTemplate: Array<SmsTemplate>): Promise<void>;
+    addTemplateToSms(appId: string, smsTemplate: Array<SmsTemplate>): Promise<void>;
     deleteSms(appId: string): Promise<void>;
     deleteSmsTemplate(templateId: string): Promise<void>;
     updateSms(appId: string, newSignName: string, newValidationTime: number): Promise<void>;
-    updateSmsTemplate(templateId: string, name: string, remark: string): Promise<void>;
+    updateSmsTemplate(templateId: number, name: string, remark: string): Promise<void>;
     findOneSms(appId: string): Promise<Sms>;
     findAllSms(): Promise<Array<Sms>>;
-    findOneSmsLog(templateId: string): Promise<Array<SmsLog>>;
+    findOneSmsLog(templateId: number): Promise<Array<SmsLog>>;
     findAllSmsLog(): Promise<Array<SmsLogData>>;
     sendMessageByQCloud(smsRequest: SmsRequest): Promise<SmsResponse>;
     private saveSmsLog(isSuccess, responseCode, responseMessage, smsRequest, smsLog);
