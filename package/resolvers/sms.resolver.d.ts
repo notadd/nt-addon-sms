@@ -19,7 +19,7 @@ export declare class SmsResolver {
         message: string;
     }>;
     smsValidator(req: any, body: {
-        templateId: number;
+        mobile: string;
         validationCode: number;
     }): Promise<{}>;
     createSms(req: any, body: {

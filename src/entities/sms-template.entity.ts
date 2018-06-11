@@ -9,7 +9,8 @@ export class SmsTemplate {
      * 短信模板id，在云服务商申请模板所生成的id
      */
     @PrimaryColumn({
-        name: "template_id"
+        name: "template_id",
+        comment: "短信模板ID"
     })
     templateId: number;
 
@@ -18,7 +19,7 @@ export class SmsTemplate {
      */
     @Column({
         name: "name",
-        length: "20"
+        comment: "模板标识"
     })
     name: string;
 
@@ -27,7 +28,7 @@ export class SmsTemplate {
      */
     @Column({
         name: "remark",
-        length: "70"
+        comment: "模板备注，用于声明模板用途"
     })
     remark: string;
 

@@ -199,16 +199,15 @@ let SmsService = class SmsService {
             }
         });
     }
-    validator(templateId, validationCode) {
+    validator(mobile, validationCode) {
         return __awaiter(this, void 0, void 0, function* () {
-            const exist = yield this.smsLogRepository.findOne(templateId, { relations: ["sms"] });
+            const exist = yield this.smsLogRepository.findOne({ where: { targetMobile: mobile, validationCode } });
             if (!exist) {
-                throw new common_1.HttpException(`短信模板ID：${templateId}，不存在`, 404);
+                throw new common_1.HttpException("验证码错误", 406);
             }
             if (moment().isAfter(moment(exist.sendTime, "YYYY-MM-DD HH:mm:ss").add(exist.validationTime, "m"))) {
                 throw new common_1.HttpException("验证超时", 408);
             }
-            return validationCode === exist.validationCode;
         });
     }
     saveSmsLog(isSuccess, responseCode, responseMessage, smsRequest, smsLog) {

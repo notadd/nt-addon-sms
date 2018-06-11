@@ -6,21 +6,22 @@ import { SmsTemplate } from "./sms-template.entity";
 export class Sms {
     @PrimaryColumn({
         name: "app_id",
-        length: "40"
+        comment: "短信服务AppId"
     })
     appId: string;
 
     @Column({
-        name: "app_key"
+        name: "app_key",
+        comment: "短信服务AppKey"
     })
     appKey: string;
 
     /**
-     * 签名名称，必须唯一
+     * 短信签名，必须唯一
      */
     @Column({
         name: "sign_name",
-        length: "10",
+        comment: "短信签名",
         unique: true
     })
     signName: string;
@@ -38,6 +39,7 @@ export class Sms {
      */
     @Column({
         name: "validation_time",
+        comment: "验证码有效期，默认5分钟",
         default: 5
     })
     validationTime: number;

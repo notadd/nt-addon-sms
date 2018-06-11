@@ -27,6 +27,6 @@ export declare class SmsService {
         code: number;
         message: string;
     }>;
-    validator(templateId: number, validationCode: number): Promise<boolean>;
+    validator(mobile: string, validationCode: number): Promise<void>;
     private saveSmsLog(isSuccess, responseCode, responseMessage, smsRequest, smsLog);
 }

@@ -28,7 +28,7 @@ let ParamUtil = class ParamUtil {
     }
     genValidationCode() {
         return __awaiter(this, void 0, void 0, function* () {
-            return new Chance().natural({ max: 100000 });
+            return new Chance().natural({ min: 100000, max: 999999 });
         });
     }
     encryptor(aesKey, original) {

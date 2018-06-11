@@ -36,7 +36,7 @@ let SmsController = class SmsController {
     }
     smsValidator(body) {
         return __awaiter(this, void 0, void 0, function* () {
-            const isSuccess = yield this.smsService.validator(body.templateId, body.validationCode);
+            const isSuccess = yield this.smsService.validator(body.mobile, body.validationCode);
             const code = isSuccess ? 200 : 406;
             const message = isSuccess ? "验证通过" : "验证不通过";
             return { code, message };

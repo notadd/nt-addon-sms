@@ -18,9 +18,9 @@ class SmsComponent {
             return this.smsService.sendMessageByQCloud(type, smsRequest);
         });
     }
-    smsValidator(templateId, validationCode) {
+    smsValidator(mobile, validationCode) {
         return __awaiter(this, void 0, void 0, function* () {
-            return this.smsService.validator(templateId, validationCode);
+            return this.smsService.validator(mobile, validationCode);
         });
     }
 }

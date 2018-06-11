@@ -16,21 +16,22 @@ let SmsTemplate = class SmsTemplate {
 };
 __decorate([
     typeorm_1.PrimaryColumn({
-        name: "template_id"
+        name: "template_id",
+        comment: "短信模板ID"
     }),
     __metadata("design:type", Number)
 ], SmsTemplate.prototype, "templateId", void 0);
 __decorate([
     typeorm_1.Column({
         name: "name",
-        length: "20"
+        comment: "模板标识"
     }),
     __metadata("design:type", String)
 ], SmsTemplate.prototype, "name", void 0);
 __decorate([
     typeorm_1.Column({
         name: "remark",
-        length: "70"
+        comment: "模板备注，用于声明模板用途"
     }),
     __metadata("design:type", String)
 ], SmsTemplate.prototype, "remark", void 0);

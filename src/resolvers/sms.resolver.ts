@@ -42,11 +42,9 @@ export class SmsResolver {
     }
 
     @Query("smsValidator")
-    async smsValidator(req, body: { templateId: number, validationCode: number }): Promise<{}> {
-        const isSuccess = await this.smsService.validator(body.templateId, body.validationCode);
-        const code = isSuccess ? 200 : 406;
-        const message = isSuccess ? "验证通过" : "验证不通过";
-        return { code, message };
+    async smsValidator(req, body: { mobile: string, validationCode: number }): Promise<{}> {
+        await this.smsService.validator(body.mobile, body.validationCode);
+        return { code: 200, message: "验证通过" };
     }
 
     @Mutation("createSms")

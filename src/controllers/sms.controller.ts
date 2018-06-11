@@ -25,8 +25,8 @@ export class SmsController {
      * @param body 发送短信的模板ID和验证码
      */
     @Post("smsValidator")
-    async smsValidator(@Body() body: { templateId: number, validationCode: number }): Promise<{ code: number, message: string }> {
-        const isSuccess = await this.smsService.validator(body.templateId, body.validationCode);
+    async smsValidator(@Body() body: { mobile: string, validationCode: number }): Promise<{ code: number, message: string }> {
+        const isSuccess = await this.smsService.validator(body.mobile, body.validationCode);
         const code = isSuccess ? 200 : 406;
         const message = isSuccess ? "验证通过" : "验证不通过";
         return { code, message };

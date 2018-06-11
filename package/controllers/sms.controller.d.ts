@@ -11,7 +11,7 @@ export declare class SmsController {
         message: string;
     }>;
     smsValidator(body: {
-        templateId: number;
+        mobile: string;
         validationCode: number;
     }): Promise<{
         code: number;

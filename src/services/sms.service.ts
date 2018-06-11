@@ -231,22 +231,20 @@ export class SmsService {
     /**
      * 校验验证码合法性
      *
-     * @param templateId 发送短信的模板ID
+     * @param mobile 手机号
      * @param validationCode 验证码
      */
-    async validator(templateId: number, validationCode: number): Promise<boolean> {
-        const exist = await this.smsLogRepository.findOne(templateId, { relations: ["sms"] });
+    async validator(mobile: string, validationCode: number): Promise<void> {
+        const exist = await this.smsLogRepository.findOne({ where: { targetMobile: mobile, validationCode } });
 
         if (!exist) {
-            throw new HttpException(`短信模板ID：${templateId}，不存在`, 404);
+            throw new HttpException("验证码错误", 406);
         }
 
         // 如果当前时间大于有效时间(发送时间+有效期)
         if (moment().isAfter(moment(exist.sendTime, "YYYY-MM-DD HH:mm:ss").add(exist.validationTime, "m"))) {
             throw new HttpException("验证超时", 408);
         }
-
-        return validationCode === exist.validationCode;
     }
 
     /**

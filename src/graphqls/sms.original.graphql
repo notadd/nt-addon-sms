@@ -2,7 +2,7 @@ type Query {
     # 发送短信，type是短信类型只能传0或1，0为通知类短信(无参数)，1为验证码类短信(有参数)
     sendMessage(type: Int!, smsRequest: SmsRequest!): SmsCommonResult
     # 校验验证码合法性
-    smsValidator(templateId: Int!, validationCode: Int!): SmsCommonResult
+    smsValidator(mobile: String!, validationCode: Int!): SmsCommonResult
     # 查询所有短信插件信息
     findAllSmsInfo: SmsInfo
     # 查询指定 appId 的短信插件信息

@@ -14,18 +14,22 @@ const sms_template_entity_1 = require("./sms-template.entity");
 let SmsLog = class SmsLog {
 };
 __decorate([
-    typeorm_1.PrimaryGeneratedColumn(),
+    typeorm_1.PrimaryGeneratedColumn({
+        comment: "自增ID"
+    }),
     __metadata("design:type", Number)
 ], SmsLog.prototype, "id", void 0);
 __decorate([
     typeorm_1.Column({
-        name: "send_time"
+        name: "send_time",
+        comment: "发送时间"
     }),
     __metadata("design:type", String)
 ], SmsLog.prototype, "sendTime", void 0);
 __decorate([
     typeorm_1.Column({
-        name: "target_mobile"
+        name: "target_mobile",
+        comment: "短信接收手机号"
     }),
     __metadata("design:type", String)
 ], SmsLog.prototype, "targetMobile", void 0);
@@ -41,6 +45,7 @@ __decorate([
 __decorate([
     typeorm_1.Column({
         name: "validation_code",
+        comment: "短信验证码",
         nullable: true
     }),
     __metadata("design:type", Number)
@@ -48,25 +53,29 @@ __decorate([
 __decorate([
     typeorm_1.Column({
         name: "validation_time",
+        comment: "验证码有效期",
         nullable: true
     }),
     __metadata("design:type", Number)
 ], SmsLog.prototype, "validationTime", void 0);
 __decorate([
     typeorm_1.Column({
-        name: "is_success"
+        name: "is_success",
+        comment: "是否发送成功"
     }),
     __metadata("design:type", Boolean)
 ], SmsLog.prototype, "isSuccess", void 0);
 __decorate([
     typeorm_1.Column({
-        name: "response_code"
+        name: "response_code",
+        comment: "云服务返回的状态码"
     }),
     __metadata("design:type", String)
 ], SmsLog.prototype, "responseCode", void 0);
 __decorate([
     typeorm_1.Column({
-        name: "response_message"
+        name: "response_message",
+        comment: "云服务返回的消息"
     }),
     __metadata("design:type", String)
 ], SmsLog.prototype, "responseMessage", void 0);

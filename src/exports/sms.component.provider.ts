@@ -20,8 +20,8 @@ export class SmsComponent {
      * @param templateId 发送短信的模板ID
      * @param validationCode 验证码
      */
-    async smsValidator(templateId: number, validationCode: number): Promise<boolean> {
-        return this.smsService.validator(templateId, validationCode);
+    async smsValidator(mobile: string, validationCode: number): Promise<void> {
+        return this.smsService.validator(mobile, validationCode);
     }
 }
 

@@ -26,7 +26,7 @@ export class ParamUtil {
      * 生成验证码
      */
     async genValidationCode(): Promise<number> {
-        return new Chance().natural({ max: 100000 });
+        return new Chance().natural({min: 100000, max: 999999 });
     }
 
     /**
