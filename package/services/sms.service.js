@@ -201,8 +201,11 @@ let SmsService = class SmsService {
     }
     validator(mobile, validationCode) {
         return __awaiter(this, void 0, void 0, function* () {
-            const exist = yield this.smsLogRepository.findOne({ where: { targetMobile: mobile, validationCode } });
+            const exist = yield this.smsLogRepository.findOne({ where: { targetMobile: mobile } });
             if (!exist) {
+                throw new common_1.HttpException("输入的手机号码与接收短信的手机号码不一致", 406);
+            }
+            if (validationCode !== exist.validationCode) {
                 throw new common_1.HttpException("验证码错误", 406);
             }
             if (moment().isAfter(moment(exist.sendTime, "YYYY-MM-DD HH:mm:ss").add(exist.validationTime, "m"))) {

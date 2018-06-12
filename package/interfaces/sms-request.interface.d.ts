@@ -1,8 +1,8 @@
 export interface SmsRequest {
     appId: string;
-    appKey: string;
-    signName: string;
+    appKey?: string;
+    signName?: string;
     templateId: number;
-    templateParam: Array<string>;
+    templateParam?: Array<string>;
     mobile: Array<string>;
 }
