@@ -189,7 +189,7 @@ export class SmsService {
     /**
      * 发送短信，并保存短信发送记录
      *
-     * @param type 短信类型 0为通知类短信(无参数)，1为验证码类短信(有参数)
+     * @param type 短信类型 0为通知类短信，1为验证码类短信
      * @param smsRequest 发送短信请求体
      */
     async sendMessageByQCloud(type: 0 | 1, smsRequest: SmsRequest): Promise<{ code: number, message: string }> {
@@ -206,6 +206,7 @@ export class SmsService {
 
             let validationCode;
             let validationTime;
+            // 有参数的短信模板，目前只能用于发送验证码类短信，即service会生成验证码和有效期！ TODO: 提供可变参数，参数类型为数组，参数顺序要和短信模板中定义的相对应
             smsRequest.templateParam = [];
             // 验证码类短信才有验证码和有效时间
             if (type === 1) {
@@ -235,9 +236,13 @@ export class SmsService {
      * @param validationCode 验证码
      */
     async validator(mobile: string, validationCode: number): Promise<void> {
-        const exist = await this.smsLogRepository.findOne({ where: { targetMobile: mobile, validationCode } });
+        const exist = await this.smsLogRepository.findOne({ where: { targetMobile: mobile } });
 
         if (!exist) {
+            throw new HttpException("输入的手机号码与接收短信的手机号码不一致", 406);
+        }
+
+        if (validationCode !== exist.validationCode) {
             throw new HttpException("验证码错误", 406);
         }
 
