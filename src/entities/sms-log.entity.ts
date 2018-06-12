@@ -16,7 +16,7 @@ export class SmsLog {
         name: "send_time",
         comment: "发送时间"
     })
-    sendTime: string;
+    sendTime: Date;
 
     /**
      * 短信接收手机号
