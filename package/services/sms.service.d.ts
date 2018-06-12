@@ -21,8 +21,9 @@ export declare class SmsService {
     updateSmsTemplate(templateId: number, name: string, remark: string): Promise<void>;
     findOneSms(appId: string): Promise<Sms>;
     findAllSms(): Promise<Array<Sms>>;
-    findOneSmsLog(templateId: number): Promise<Array<SmsLog>>;
+    findOneSmsLog(templateId: number): Promise<Array<SmsLogData>>;
     findAllSmsLog(): Promise<Array<SmsLogData>>;
+    private forMatSmsLogSendTime(smsLogList);
     sendMessageByQCloud(type: 0 | 1, smsRequest: SmsRequest): Promise<{
         code: number;
         message: string;

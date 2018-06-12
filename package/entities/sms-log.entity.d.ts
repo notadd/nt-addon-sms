@@ -1,7 +1,7 @@
 import { SmsTemplate } from "./sms-template.entity";
 export declare class SmsLog {
     id: number;
-    sendTime: string;
+    sendTime: Date;
     targetMobile: string;
     smsTemplate: SmsTemplate;
     validationCode: number;

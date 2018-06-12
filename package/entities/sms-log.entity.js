@@ -24,7 +24,7 @@ __decorate([
         name: "send_time",
         comment: "发送时间"
     }),
-    __metadata("design:type", String)
+    __metadata("design:type", Date)
 ], SmsLog.prototype, "sendTime", void 0);
 __decorate([
     typeorm_1.Column({

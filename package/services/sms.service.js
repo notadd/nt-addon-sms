@@ -159,12 +159,32 @@ let SmsService = class SmsService {
             if (!existTemplate) {
                 throw new common_1.HttpException(`指定短信模板'templateId=${templateId}'不存在`, 400);
             }
-            return this.smsTemplateRepository.createQueryBuilder().relation(sms_template_entity_1.SmsTemplate, "smsLogs").of(templateId).loadMany();
+            const smsLogList = yield this.smsLogRepository.find({ relations: ["smsTemplate"], where: { smsTemplate: { templateId } } });
+            return this.forMatSmsLogSendTime(smsLogList);
         });
     }
     findAllSmsLog() {
         return __awaiter(this, void 0, void 0, function* () {
-            return this.smsLogRepository.find();
+            const smsLogList = yield this.smsLogRepository.find();
+            return this.forMatSmsLogSendTime(smsLogList);
+        });
+    }
+    forMatSmsLogSendTime(smsLogList) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const smsLogDataList = smsLogList.map(item => {
+                const smsLogData = {
+                    id: item.id,
+                    sendTime: moment(item.sendTime).format("YYYY-MM-DD HH:mm:ss"),
+                    targetMobile: item.targetMobile,
+                    validationCode: item.validationCode,
+                    validationTime: item.validationTime,
+                    isSuccess: item.isSuccess,
+                    responseCode: item.responseCode,
+                    responseMessage: item.responseMessage,
+                };
+                return smsLogData;
+            });
+            return smsLogDataList;
         });
     }
     sendMessageByQCloud(type, smsRequest) {
@@ -201,15 +221,15 @@ let SmsService = class SmsService {
     }
     validator(mobile, validationCode) {
         return __awaiter(this, void 0, void 0, function* () {
-            const exist = yield this.smsLogRepository.findOne({ where: { targetMobile: mobile } });
-            if (!exist) {
-                throw new common_1.HttpException("输入的手机号码与接收短信的手机号码不一致", 406);
+            const exist = yield this.smsLogRepository.find({ where: { targetMobile: mobile }, order: { sendTime: "DESC" }, take: 1 });
+            if (exist.length === 0) {
+                throw new common_1.HttpException("输入的手机号码与接收短信的手机号码不一致", 404);
             }
-            if (validationCode !== exist.validationCode) {
+            if (validationCode !== exist[0].validationCode) {
                 throw new common_1.HttpException("验证码错误", 406);
             }
-            if (moment().isAfter(moment(exist.sendTime, "YYYY-MM-DD HH:mm:ss").add(exist.validationTime, "m"))) {
-                throw new common_1.HttpException("验证超时", 408);
+            if (moment().isAfter(moment(exist[0].sendTime, "YYYY-MM-DD HH:mm:ss").add(exist[0].validationTime, "m"))) {
+                throw new common_1.HttpException("验证超时，请重新获取验证码", 408);
             }
         });
     }
@@ -223,7 +243,7 @@ let SmsService = class SmsService {
             smsLog.isSuccess = isSuccess;
             smsLog.responseCode = responseCode;
             smsLog.responseMessage = responseMessage;
-            smsLog.sendTime = moment().format("YYYY-MM-DD HH:mm:ss");
+            smsLog.sendTime = moment().toDate();
             const queryRunner = typeorm_2.getConnection().createQueryRunner();
             yield queryRunner.startTransaction();
             try {
