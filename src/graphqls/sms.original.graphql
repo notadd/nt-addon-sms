@@ -1,5 +1,5 @@
 type Query {
-    # 发送短信，type是短信类型只能传0或1，0为通知类短信(无参数)，1为验证码类短信(有参数)
+    # 发送短信，type是短信类型只能传0或1，0为通知类短信，1为验证码类短信
     sendMessage(type: Int!, smsRequest: SmsRequest!): SmsCommonResult
     # 校验验证码合法性
     smsValidator(mobile: String!, validationCode: Int!): SmsCommonResult
