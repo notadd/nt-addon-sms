@@ -171,19 +171,44 @@ export class SmsService {
      * 查询指定 templateId 的短信发送记录
      * @param templateId 短信模板id
      */
-    async findOneSmsLog(templateId: number): Promise<Array<SmsLog>> {
+    async findOneSmsLog(templateId: number): Promise<Array<SmsLogData>> {
         const existTemplate: SmsTemplate | undefined = await this.smsTemplateRepository.findOne(templateId);
         if (!existTemplate) {
             throw new HttpException(`指定短信模板'templateId=${templateId}'不存在`, 400);
         }
-        return this.smsTemplateRepository.createQueryBuilder().relation(SmsTemplate, "smsLogs").of(templateId).loadMany();
+        const smsLogList = await this.smsLogRepository.find({ relations: ["smsTemplate"], where: { smsTemplate: { templateId } } });
+        return this.forMatSmsLogSendTime(smsLogList);
     }
 
     /**
      * 查询所有短信发送记录
      */
     async findAllSmsLog(): Promise<Array<SmsLogData>> {
-        return this.smsLogRepository.find();
+        const smsLogList = await this.smsLogRepository.find();
+        // 格式化日期
+        return this.forMatSmsLogSendTime(smsLogList);
+    }
+
+    /**
+     * 格式化短信发送记录中的发送时间
+     *
+     * @param smsLogList 短信发送记录日志列表
+     */
+    private async forMatSmsLogSendTime(smsLogList: Array<SmsLog>): Promise<Array<SmsLogData>> {
+        const smsLogDataList: Array<SmsLogData> = smsLogList.map(item => {
+            const smsLogData: SmsLogData = {
+                id: item.id,
+                sendTime: moment(item.sendTime).format("YYYY-MM-DD HH:mm:ss"),
+                targetMobile: item.targetMobile,
+                validationCode: item.validationCode,
+                validationTime: item.validationTime,
+                isSuccess: item.isSuccess,
+                responseCode: item.responseCode,
+                responseMessage: item.responseMessage,
+            };
+            return smsLogData;
+        });
+        return smsLogDataList;
     }
 
     /**
@@ -236,19 +261,19 @@ export class SmsService {
      * @param validationCode 验证码
      */
     async validator(mobile: string, validationCode: number): Promise<void> {
-        const exist = await this.smsLogRepository.findOne({ where: { targetMobile: mobile } });
+        const exist = await this.smsLogRepository.find({ where: { targetMobile: mobile }, order: { sendTime: "DESC" }, take: 1 });
 
-        if (!exist) {
-            throw new HttpException("输入的手机号码与接收短信的手机号码不一致", 406);
+        if (exist.length === 0) {
+            throw new HttpException("输入的手机号码与接收短信的手机号码不一致", 404);
         }
 
-        if (validationCode !== exist.validationCode) {
+        if (validationCode !== exist[0].validationCode) {
             throw new HttpException("验证码错误", 406);
         }
 
         // 如果当前时间大于有效时间(发送时间+有效期)
-        if (moment().isAfter(moment(exist.sendTime, "YYYY-MM-DD HH:mm:ss").add(exist.validationTime, "m"))) {
-            throw new HttpException("验证超时", 408);
+        if (moment().isAfter(moment(exist[0].sendTime, "YYYY-MM-DD HH:mm:ss").add(exist[0].validationTime, "m"))) {
+            throw new HttpException("验证超时，请重新获取验证码", 408);
         }
     }
 
@@ -274,7 +299,7 @@ export class SmsService {
         smsLog.responseCode = responseCode;
         smsLog.responseMessage = responseMessage;
         // 发送时间
-        smsLog.sendTime = moment().format("YYYY-MM-DD HH:mm:ss");
+        smsLog.sendTime = moment().toDate();
         // 获取连接开启事务
         const queryRunner = getConnection().createQueryRunner();
         await queryRunner.startTransaction();
