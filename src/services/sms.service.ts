@@ -31,7 +31,7 @@ export class SmsService {
         const existSms: Sms | undefined = await this.smsRepository.createQueryBuilder("sms").where(`sms.app_id='${sms.appId}' OR sms.sign_name='${sms.signName}'`).getOne();
         if (existSms) {
             const existError = existSms.appId === sms.appId ? `appId=${sms.appId}` : `signName=${sms.signName}`;
-            throw new HttpException(`短信插件'${existError}'已存在`, 400);
+            throw new HttpException(`短信插件'${existError}'已存在`, 409);
         }
         //  传入模板信息才会保存，不传入不保存
         if (sms.templates && sms.templates.length !== 0) {
@@ -39,7 +39,7 @@ export class SmsService {
             const templates = (await this.smsTemplateRepository.findByIds(sms.templates.map(item => item.templateId))).concat(sms.templates);
             const sameTemplateId = await this.paramUtil.findSameTemplateId(templates);
             if (sameTemplateId.length !== 0) {
-                throw new HttpException(`存在相同模板templateId='[${sameTemplateId.toString()}]'`, 400);
+                throw new HttpException(`存在相同模板templateId='[${sameTemplateId.toString()}]'`, 409);
             }
         }
         try {
@@ -59,13 +59,13 @@ export class SmsService {
     async addTemplateToSms(appId: string, smsTemplate: Array<SmsTemplate>): Promise<void> {
         const existSms: Sms | undefined = await this.smsRepository.findOne(appId);
         if (!existSms) {
-            throw new HttpException(`指定短信插件'appId=${appId}'不存在`, 400);
+            throw new HttpException(`指定短信插件'appId=${appId}'不存在`, 404);
         }
         // 模板去重，返回相同模板的id
         const templates = (await this.smsTemplateRepository.findByIds(smsTemplate.map(item => item.templateId))).concat(smsTemplate);
         const sameTemplateId = await this.paramUtil.findSameTemplateId(templates);
         if (sameTemplateId.length !== 0) {
-            throw new HttpException(`存在相同模板templateId='[${sameTemplateId.toString()}]'`, 400);
+            throw new HttpException(`存在相同模板templateId='[${sameTemplateId.toString()}]'`, 409);
         }
         // 获取连接开启事务
         const queryRunner = getConnection().createQueryRunner();
@@ -89,7 +89,7 @@ export class SmsService {
     async deleteSms(appId: string): Promise<void> {
         const existSms: Sms | undefined = await this.smsRepository.findOne(appId);
         if (!existSms) {
-            throw new HttpException(`指定短信插件'appId=${appId}'不存在`, 400);
+            throw new HttpException(`指定短信插件'appId=${appId}'不存在`, 404);
         }
         try {
             await this.smsRepository.delete(appId);
@@ -119,9 +119,9 @@ export class SmsService {
     async updateSms(appId: string, newSignName: string, newValidationTime: number): Promise<void> {
         const existSms: Sms | undefined = await this.smsRepository.findOne(appId);
         if (!existSms) {
-            throw new HttpException(`指定短信插件'appId=${appId}'不存在`, 400);
+            throw new HttpException(`指定短信插件'appId=${appId}'不存在`, 404);
         } else if (await this.smsRepository.findOne({ signName: newSignName })) {
-            throw new HttpException(`指定签名'signName=${newSignName}'已存在`, 400);
+            throw new HttpException(`指定签名'signName=${newSignName}'已存在`, 409);
         }
         try {
             existSms.signName = newSignName;
@@ -141,7 +141,7 @@ export class SmsService {
     async updateSmsTemplate(templateId: number, name: string, remark: string): Promise<void> {
         const existTemplate: SmsTemplate | undefined = await this.smsTemplateRepository.findOne(templateId);
         if (!existTemplate) {
-            throw new HttpException(`指定短信模板'templateId=${templateId}'不存在`, 400);
+            throw new HttpException(`指定短信模板'templateId=${templateId}'不存在`, 404);
         }
         try {
             existTemplate.name = name;
@@ -174,7 +174,7 @@ export class SmsService {
     async findOneSmsLog(templateId: number): Promise<Array<SmsLogData>> {
         const existTemplate: SmsTemplate | undefined = await this.smsTemplateRepository.findOne(templateId);
         if (!existTemplate) {
-            throw new HttpException(`指定短信模板'templateId=${templateId}'不存在`, 400);
+            throw new HttpException(`指定短信模板'templateId=${templateId}'不存在`, 404);
         }
         const smsLogList = await this.smsLogRepository.find({ relations: ["smsTemplate"], where: { smsTemplate: { templateId } } });
         return this.forMatSmsLogSendTime(smsLogList);
@@ -220,10 +220,10 @@ export class SmsService {
     async sendMessageByQCloud(type: 0 | 1, smsRequest: SmsRequest): Promise<{ code: number, message: string }> {
         const existSms = await this.smsRepository.findOne(smsRequest.appId);
         if (!existSms) {
-            throw new HttpException(`指定短信插件'appId=${smsRequest.appId}'不存在`, 400);
+            throw new HttpException(`指定短信插件'appId=${smsRequest.appId}'不存在`, 404);
         } else {
             const existTemplate = await this.smsTemplateRepository.findOne(smsRequest.templateId);
-            if (!existTemplate) { throw new HttpException(`指定短信模板'templateId=${smsRequest.templateId}'不存在`, 400); }
+            if (!existTemplate) { throw new HttpException(`指定短信模板'templateId=${smsRequest.templateId}'不存在`, 404); }
 
             smsRequest.signName = existSms.signName;
             // 解密 appKey
