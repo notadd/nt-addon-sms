@@ -42,13 +42,13 @@ let SmsService = class SmsService {
             const existSms = yield this.smsRepository.createQueryBuilder("sms").where(`sms.app_id='${sms.appId}' OR sms.sign_name='${sms.signName}'`).getOne();
             if (existSms) {
                 const existError = existSms.appId === sms.appId ? `appId=${sms.appId}` : `signName=${sms.signName}`;
-                throw new common_1.HttpException(`短信插件'${existError}'已存在`, 400);
+                throw new common_1.HttpException(`短信插件'${existError}'已存在`, 409);
             }
             if (sms.templates && sms.templates.length !== 0) {
                 const templates = (yield this.smsTemplateRepository.findByIds(sms.templates.map(item => item.templateId))).concat(sms.templates);
                 const sameTemplateId = yield this.paramUtil.findSameTemplateId(templates);
                 if (sameTemplateId.length !== 0) {
-                    throw new common_1.HttpException(`存在相同模板templateId='[${sameTemplateId.toString()}]'`, 400);
+                    throw new common_1.HttpException(`存在相同模板templateId='[${sameTemplateId.toString()}]'`, 409);
                 }
             }
             try {
@@ -64,12 +64,12 @@ let SmsService = class SmsService {
         return __awaiter(this, void 0, void 0, function* () {
             const existSms = yield this.smsRepository.findOne(appId);
             if (!existSms) {
-                throw new common_1.HttpException(`指定短信插件'appId=${appId}'不存在`, 400);
+                throw new common_1.HttpException(`指定短信插件'appId=${appId}'不存在`, 404);
             }
             const templates = (yield this.smsTemplateRepository.findByIds(smsTemplate.map(item => item.templateId))).concat(smsTemplate);
             const sameTemplateId = yield this.paramUtil.findSameTemplateId(templates);
             if (sameTemplateId.length !== 0) {
-                throw new common_1.HttpException(`存在相同模板templateId='[${sameTemplateId.toString()}]'`, 400);
+                throw new common_1.HttpException(`存在相同模板templateId='[${sameTemplateId.toString()}]'`, 409);
             }
             const queryRunner = typeorm_2.getConnection().createQueryRunner();
             yield queryRunner.startTransaction();
@@ -88,7 +88,7 @@ let SmsService = class SmsService {
         return __awaiter(this, void 0, void 0, function* () {
             const existSms = yield this.smsRepository.findOne(appId);
             if (!existSms) {
-                throw new common_1.HttpException(`指定短信插件'appId=${appId}'不存在`, 400);
+                throw new common_1.HttpException(`指定短信插件'appId=${appId}'不存在`, 404);
             }
             try {
                 yield this.smsRepository.delete(appId);
@@ -112,10 +112,10 @@ let SmsService = class SmsService {
         return __awaiter(this, void 0, void 0, function* () {
             const existSms = yield this.smsRepository.findOne(appId);
             if (!existSms) {
-                throw new common_1.HttpException(`指定短信插件'appId=${appId}'不存在`, 400);
+                throw new common_1.HttpException(`指定短信插件'appId=${appId}'不存在`, 404);
             }
             else if (yield this.smsRepository.findOne({ signName: newSignName })) {
-                throw new common_1.HttpException(`指定签名'signName=${newSignName}'已存在`, 400);
+                throw new common_1.HttpException(`指定签名'signName=${newSignName}'已存在`, 409);
             }
             try {
                 existSms.signName = newSignName;
@@ -131,7 +131,7 @@ let SmsService = class SmsService {
         return __awaiter(this, void 0, void 0, function* () {
             const existTemplate = yield this.smsTemplateRepository.findOne(templateId);
             if (!existTemplate) {
-                throw new common_1.HttpException(`指定短信模板'templateId=${templateId}'不存在`, 400);
+                throw new common_1.HttpException(`指定短信模板'templateId=${templateId}'不存在`, 404);
             }
             try {
                 existTemplate.name = name;
@@ -157,7 +157,7 @@ let SmsService = class SmsService {
         return __awaiter(this, void 0, void 0, function* () {
             const existTemplate = yield this.smsTemplateRepository.findOne(templateId);
             if (!existTemplate) {
-                throw new common_1.HttpException(`指定短信模板'templateId=${templateId}'不存在`, 400);
+                throw new common_1.HttpException(`指定短信模板'templateId=${templateId}'不存在`, 404);
             }
             const smsLogList = yield this.smsLogRepository.find({ relations: ["smsTemplate"], where: { smsTemplate: { templateId } } });
             return this.forMatSmsLogSendTime(smsLogList);
@@ -191,12 +191,12 @@ let SmsService = class SmsService {
         return __awaiter(this, void 0, void 0, function* () {
             const existSms = yield this.smsRepository.findOne(smsRequest.appId);
             if (!existSms) {
-                throw new common_1.HttpException(`指定短信插件'appId=${smsRequest.appId}'不存在`, 400);
+                throw new common_1.HttpException(`指定短信插件'appId=${smsRequest.appId}'不存在`, 404);
             }
             else {
                 const existTemplate = yield this.smsTemplateRepository.findOne(smsRequest.templateId);
                 if (!existTemplate) {
-                    throw new common_1.HttpException(`指定短信模板'templateId=${smsRequest.templateId}'不存在`, 400);
+                    throw new common_1.HttpException(`指定短信模板'templateId=${smsRequest.templateId}'不存在`, 404);
                 }
                 smsRequest.signName = existSms.signName;
                 smsRequest.appKey = yield this.paramUtil.decryptor(existSms.appId, existSms.appKey);
