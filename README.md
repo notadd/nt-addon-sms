@@ -42,7 +42,7 @@ export class ExampleService {
         @Inject("SmsComponentToken") private readonly smsComponentProvider: SmsComponent,
     ) { }
 
-    // SmsRequest { appId: "xxx", templateId: xxxxxx, mobile: ["xxxxxxxxxxx"] }
+    // SmsRequest example：(2 , { appId: "1234567890", templateId: 123456, templateParam: ["xxxxx", "xxxxx"], "mobile": ["13512345678"] })
     async sendSms(type: number, smsRequest: SmsRequest) {
         // Send SMS, type is the type of message can only pass 0 or 1, 0 is a notification message, 1 is a verification code message
         // reuturn { code: number, message: string }

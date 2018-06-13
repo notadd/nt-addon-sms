@@ -40,9 +40,9 @@ export class ExampleService {
         @Inject("SmsComponentToken") private readonly smsComponentProvider: SmsComponent,
     ) { }
 
-    // SmsRequest { appId: "xxx", templateId: xxxxxx, mobile: ["xxxxxxxxxxx"] }
+    // SmsRequest example：(2 , { appId: "1234567890", templateId: 123456, templateParam: ["xxxxx", "xxxxx"], "mobile": ["13512345678"] })
     async sendSms(type: number, smsRequest: SmsRequest) {
-        // 短信类型 0为通知类短信(模板无参数)，1为验证码类短信(模板有参数)
+        // 短信类型 0为通知短信，1为验证码短信，2为自定义参数短信
         // 成功时返回 { code: 200, message: "发送短信成功" };
         //
         // 失败时会抛出以下几种异常：
@@ -58,7 +58,7 @@ export class ExampleService {
         // 校验顺序：
         // step 1，判断手机号是否和接收短信手机号一致，失败时： HttpException ("输入的手机号码与接收短信的手机号码不一致", 404);
         // step 2，判断验证码是否正确，失败时： HttpException ("验证码错误", 406);
-        // step 3 判断验证码是否超时，失败时： HttpException ("验证超时，请重新获取验证码", 408);
+        // step 3，判断验证码是否超时，失败时： HttpException ("验证超时，请重新获取验证码", 408);
         await this.smsComponentProvider.smsValidator(mobile, validationCode);
     }
 }
