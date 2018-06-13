@@ -9,7 +9,7 @@ export interface SmsRequest {
 
     templateId: number;
 
-    // templateParam 是由service生成的验证码和有效期，发短信时不需要传入
+    // templateParam 只在发送自定义参数短信时传入
     templateParam?: Array<string>;
 
     mobile: Array<string>;

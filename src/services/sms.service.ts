@@ -71,14 +71,16 @@ export class SmsService {
         const queryRunner = getConnection().createQueryRunner();
         await queryRunner.startTransaction();
         try {
-            const newSmsTemplate = await queryRunner.manager.save(smsTemplate);
-            await queryRunner.manager.createQueryBuilder().relation(Sms, "templates").of(existSms).add(newSmsTemplate);
+            const newSmsTemplate = await queryRunner.manager.save(SmsTemplate, smsTemplate);
+            await queryRunner.manager.createQueryBuilder().relation(Sms, "templates").of(existSms).add(newSmsTemplate.map(item => item.templateId));
             // 提交事务
             await queryRunner.commitTransaction();
         } catch (error) {
             // 发生错误时，回滚
             await queryRunner.rollbackTransaction();
             throw new HttpException(`数据库错误：${error.toString()}`, 501);
+        } finally {
+            await queryRunner.release();
         }
     }
 
@@ -214,10 +216,10 @@ export class SmsService {
     /**
      * 发送短信，并保存短信发送记录
      *
-     * @param type 短信类型 0为通知类短信，1为验证码类短信
+     * @param type 短信类型：0-通知短信，1-验证码短信，2-自定义参数短信
      * @param smsRequest 发送短信请求体
      */
-    async sendMessageByQCloud(type: 0 | 1, smsRequest: SmsRequest): Promise<{ code: number, message: string }> {
+    async sendMessageByQCloud(type: number, smsRequest: SmsRequest): Promise<{ code: number, message: string }> {
         const existSms = await this.smsRepository.findOne(smsRequest.appId);
         if (!existSms) {
             throw new HttpException(`指定短信插件'appId=${smsRequest.appId}'不存在`, 404);
@@ -229,24 +231,29 @@ export class SmsService {
             // 解密 appKey
             smsRequest.appKey = await this.paramUtil.decryptor(existSms.appId, existSms.appKey);
 
-            let validationCode;
-            let validationTime;
-            // 有参数的短信模板，目前只能用于发送验证码类短信，即service会生成验证码和有效期！ TODO: 提供可变参数，参数类型为数组，参数顺序要和短信模板中定义的相对应
-            smsRequest.templateParam = [];
-            // 验证码类短信才有验证码和有效时间
-            if (type === 1) {
-                // 生成验证码，传递有效时间
-                validationCode = await this.paramUtil.genValidationCode();
-                validationTime = existSms.validationTime;
-                smsRequest.templateParam = [`${validationCode}`, `${validationTime}`];
+            // 判断短信类型，处理短信参数
+            switch (type) {
+                case 0:
+                    smsRequest.templateParam = [];
+                    break;
+                case 1:
+                    // 生成验证码，传递有效时间
+                    const validationCode = await this.paramUtil.genValidationCode();
+                    const validationTime = existSms.validationTime;
+                    smsRequest.templateParam = [`${validationCode}`, `${validationTime}`];
+                    break;
+                case 2:
+                    break;
+                default:
+                    throw new HttpException("type参数错误", 406);
             }
 
             // 发送短信，调用腾讯云短信服务接口，保存 response 返回的消息和状态码
             await this.qcloudService.sendSms(smsRequest).then(resolve => {
-                this.saveSmsLog(true, resolve.code, resolve.message, smsRequest, new SmsLog());
+                this.saveSmsLog(type, true, resolve.code, resolve.message, smsRequest, new SmsLog());
             }).catch(reject => {
                 const rejectCode = reject.code ? reject.code : 500;
-                this.saveSmsLog(false, rejectCode, reject.message, smsRequest, new SmsLog());
+                this.saveSmsLog(type, false, rejectCode, reject.message, smsRequest, new SmsLog());
                 throw new HttpException(`发送失败，原因：${reject.message}`, rejectCode);
             });
 
@@ -285,14 +292,18 @@ export class SmsService {
      * @param smsRequest 短信发送数据实体
      * @param smsLog 短信发送记录
      */
-    private async saveSmsLog(isSuccess: boolean, responseCode: string, responseMessage: string, smsRequest: SmsRequest, smsLog: SmsLog) {
+    private async saveSmsLog(type: number, isSuccess: boolean, responseCode: string, responseMessage: string, smsRequest: SmsRequest, smsLog: SmsLog) {
         // 保存接收短信的手机号
         smsLog.targetMobile = smsRequest.mobile.join();
         // 保存验证码类短信的验证码和有效期
-        if (smsRequest.templateParam.length !== 0) {
+        if (type === 1) {
             // 短信验证码及有效期
             smsLog.validationCode = parseInt(smsRequest.templateParam[0]);
             smsLog.validationTime = parseInt(smsRequest.templateParam[1]);
+        }
+        // 保存自定义参数短信中输入的参数
+        if (type === 2) {
+            smsLog.templateParam = JSON.stringify(smsRequest.templateParam);
         }
         // 是否发送成功
         smsLog.isSuccess = isSuccess;
@@ -312,6 +323,8 @@ export class SmsService {
             // 发生错误时，回滚
             await queryRunner.rollbackTransaction();
             throw new HttpException(`数据库错误：${error.toString()}`, 501);
+        } finally {
+            await queryRunner.release();
         }
     }
 }

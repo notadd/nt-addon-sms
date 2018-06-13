@@ -9,14 +9,14 @@ export class SmsController {
 
     /**
      * 发送短信接口
-     * @param body example: {"type": 0, smsRequest: { "appId": "1234567890", "templateId": 123456, "mobile": ["13512345678"] } }
+     * @param body example: {"type": 2, smsRequest: { "appId": "1234567890", "templateId": 123456, "templateParam": ["xxxxx", "xxxxx"], "mobile": ["13512345678"] } }
      */
     @Post("sendMessage")
     async sendMessage(@Body() body: { type: number, smsRequest: SmsRequest }): Promise<{ code: number, message: string }> {
-        if (body.type === 0 || body.type === 1) {
+        if ([0, 1, 2].indexOf(body.type) !== -1) {
             return this.smsService.sendMessageByQCloud(body.type, body.smsRequest);
         }
-        return { code: 406, message: "type参数有误，0为通知类短信(模板无参数)，1为验证码类短信(模板有参数)" };
+        return { code: 406, message: "type参数错误：0-通知短信，1-验证码短信，2-自定义参数短信" };
     }
 
     /**
