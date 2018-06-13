@@ -1,6 +1,6 @@
 type Query {
     # 发送短信，type是短信类型：0为通知短信，1为验证码短信，2为自定义参数短信
-    sendMessage(type: Int!, smsRequest: SmsRequest!): SmsCommonResult
+    sendMessage(type: Int!, smsRequest: SmsRequest): SmsCommonResult
     # 校验验证码合法性
     smsValidator(mobile: String!, validationCode: Int!): SmsCommonResult
     # 查询所有短信插件信息
@@ -124,11 +124,11 @@ input SmsTemplate {
 # 腾讯云发送短信请求参数
 input SmsRequest {
     # 短信插件ID
-    appId: String
+    appId: String!
     # 模板
-    templateId: Int
+    templateId: Int!
     # 模板参数，只能type为2时传入，数据顺序需和腾讯云申请的模板参数顺序一致
     templateParam: [String]
     # 用户手机号
-    mobile: [String]
+    mobile: [String]!
 }

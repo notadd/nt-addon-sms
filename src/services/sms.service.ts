@@ -249,13 +249,14 @@ export class SmsService {
             }
 
             // 发送短信，调用腾讯云短信服务接口，保存 response 返回的消息和状态码
-            await this.qcloudService.sendSms(smsRequest).then(resolve => {
-                this.saveSmsLog(type, true, resolve.code, resolve.message, smsRequest, new SmsLog());
-            }).catch(reject => {
-                const rejectCode = reject.code ? reject.code : 500;
-                this.saveSmsLog(type, false, rejectCode, reject.message, smsRequest, new SmsLog());
-                throw new HttpException(`发送失败，原因：${reject.message}`, rejectCode);
-            });
+            try {
+                const result = await this.qcloudService.sendSms(smsRequest);
+                await this.saveSmsLog(type, true, result.code, result.message, smsRequest, new SmsLog());
+            } catch (error) {
+                const rejectCode = error.code ? error.code : 500;
+                await this.saveSmsLog(type, false, rejectCode, error.message, smsRequest, new SmsLog());
+                throw new HttpException(`发送失败，原因：${error.message}`, rejectCode);
+            }
 
             return { code: 200, message: "发送短信成功" };
         }
