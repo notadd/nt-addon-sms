@@ -9,6 +9,7 @@
         "publish": "node ./node_modules/lerna/bin/lerna.js publish -m \"chore(release): publish %s\"",
         "start": "node ./starter/index.js",
         "start:dev": "nodemon",
+        "start:debug": "nodemon --config nodemon-debug.json",
         "check": "tslint -p tsconfig.json -c tslint.json"
     },
     "author": "dzzzzzy",
