@@ -1,5 +1,7 @@
 # notadd-addon-sms
 
+[中文文档](./README_zh.md)
+
 ## Features
 
 1. SMS plug-in management
