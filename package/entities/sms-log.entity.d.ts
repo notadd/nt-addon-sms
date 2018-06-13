@@ -4,6 +4,7 @@ export declare class SmsLog {
     sendTime: Date;
     targetMobile: string;
     smsTemplate: SmsTemplate;
+    templateParam: string;
     validationCode: number;
     validationTime: number;
     isSuccess: boolean;

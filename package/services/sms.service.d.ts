@@ -24,10 +24,10 @@ export declare class SmsService {
     findOneSmsLog(templateId: number): Promise<Array<SmsLogData>>;
     findAllSmsLog(): Promise<Array<SmsLogData>>;
     private forMatSmsLogSendTime(smsLogList);
-    sendMessageByQCloud(type: 0 | 1, smsRequest: SmsRequest): Promise<{
+    sendMessageByQCloud(type: number, smsRequest: SmsRequest): Promise<{
         code: number;
         message: string;
     }>;
     validator(mobile: string, validationCode: number): Promise<void>;
-    private saveSmsLog(isSuccess, responseCode, responseMessage, smsRequest, smsLog);
+    private saveSmsLog(type, isSuccess, responseCode, responseMessage, smsRequest, smsLog);
 }

@@ -28,10 +28,10 @@ let SmsController = class SmsController {
     }
     sendMessage(body) {
         return __awaiter(this, void 0, void 0, function* () {
-            if (body.type === 0 || body.type === 1) {
+            if ([0, 1, 2].indexOf(body.type) !== -1) {
                 return this.smsService.sendMessageByQCloud(body.type, body.smsRequest);
             }
-            return { code: 406, message: "type参数有误，0为通知类短信(模板无参数)，1为验证码类短信(模板有参数)" };
+            return { code: 406, message: "type参数错误：0-通知短信，1-验证码短信，2-自定义参数短信" };
         });
     }
     smsValidator(body) {

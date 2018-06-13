@@ -1,5 +1,5 @@
 type Query {
-    # 发送短信，type是短信类型只能传0或1，0为通知类短信，1为验证码类短信
+    # 发送短信，type是短信类型：0为通知短信，1为验证码短信，2为自定义参数短信
     sendMessage(type: Int!, smsRequest: SmsRequest!): SmsCommonResult
     # 校验验证码合法性
     smsValidator(mobile: String!, validationCode: Int!): SmsCommonResult
@@ -127,6 +127,8 @@ input SmsRequest {
     appId: String
     # 模板
     templateId: Int
+    # 模板参数，只能type为2时传入，数据顺序需和腾讯云申请的模板参数顺序一致
+    templateParam: [String]
     # 用户手机号
     mobile: [String]
 }

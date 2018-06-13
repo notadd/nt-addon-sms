@@ -74,13 +74,16 @@ let SmsService = class SmsService {
             const queryRunner = typeorm_2.getConnection().createQueryRunner();
             yield queryRunner.startTransaction();
             try {
-                const newSmsTemplate = yield queryRunner.manager.save(smsTemplate);
-                yield queryRunner.manager.createQueryBuilder().relation(sms_entity_1.Sms, "templates").of(existSms).add(newSmsTemplate);
+                const newSmsTemplate = yield queryRunner.manager.save(sms_template_entity_1.SmsTemplate, smsTemplate);
+                yield queryRunner.manager.createQueryBuilder().relation(sms_entity_1.Sms, "templates").of(existSms).add(newSmsTemplate.map(item => item.templateId));
                 yield queryRunner.commitTransaction();
             }
             catch (error) {
                 yield queryRunner.rollbackTransaction();
                 throw new common_1.HttpException(`数据库错误：${error.toString()}`, 501);
+            }
+            finally {
+                yield queryRunner.release();
             }
         });
     }
@@ -200,19 +203,25 @@ let SmsService = class SmsService {
                 }
                 smsRequest.signName = existSms.signName;
                 smsRequest.appKey = yield this.paramUtil.decryptor(existSms.appId, existSms.appKey);
-                let validationCode;
-                let validationTime;
-                smsRequest.templateParam = [];
-                if (type === 1) {
-                    validationCode = yield this.paramUtil.genValidationCode();
-                    validationTime = existSms.validationTime;
-                    smsRequest.templateParam = [`${validationCode}`, `${validationTime}`];
+                switch (type) {
+                    case 0:
+                        smsRequest.templateParam = [];
+                        break;
+                    case 1:
+                        const validationCode = yield this.paramUtil.genValidationCode();
+                        const validationTime = existSms.validationTime;
+                        smsRequest.templateParam = [`${validationCode}`, `${validationTime}`];
+                        break;
+                    case 2:
+                        break;
+                    default:
+                        throw new common_1.HttpException("type参数错误", 406);
                 }
                 yield this.qcloudService.sendSms(smsRequest).then(resolve => {
-                    this.saveSmsLog(true, resolve.code, resolve.message, smsRequest, new sms_log_entity_1.SmsLog());
+                    this.saveSmsLog(type, true, resolve.code, resolve.message, smsRequest, new sms_log_entity_1.SmsLog());
                 }).catch(reject => {
                     const rejectCode = reject.code ? reject.code : 500;
-                    this.saveSmsLog(false, rejectCode, reject.message, smsRequest, new sms_log_entity_1.SmsLog());
+                    this.saveSmsLog(type, false, rejectCode, reject.message, smsRequest, new sms_log_entity_1.SmsLog());
                     throw new common_1.HttpException(`发送失败，原因：${reject.message}`, rejectCode);
                 });
                 return { code: 200, message: "发送短信成功" };
@@ -233,12 +242,15 @@ let SmsService = class SmsService {
             }
         });
     }
-    saveSmsLog(isSuccess, responseCode, responseMessage, smsRequest, smsLog) {
+    saveSmsLog(type, isSuccess, responseCode, responseMessage, smsRequest, smsLog) {
         return __awaiter(this, void 0, void 0, function* () {
             smsLog.targetMobile = smsRequest.mobile.join();
-            if (smsRequest.templateParam.length !== 0) {
+            if (type === 1) {
                 smsLog.validationCode = parseInt(smsRequest.templateParam[0]);
                 smsLog.validationTime = parseInt(smsRequest.templateParam[1]);
+            }
+            if (type === 2) {
+                smsLog.templateParam = JSON.stringify(smsRequest.templateParam);
             }
             smsLog.isSuccess = isSuccess;
             smsLog.responseCode = responseCode;
@@ -254,6 +266,9 @@ let SmsService = class SmsService {
             catch (error) {
                 yield queryRunner.rollbackTransaction();
                 throw new common_1.HttpException(`数据库错误：${error.toString()}`, 501);
+            }
+            finally {
+                yield queryRunner.release();
             }
         });
     }

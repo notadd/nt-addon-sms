@@ -44,6 +44,14 @@ __decorate([
 ], SmsLog.prototype, "smsTemplate", void 0);
 __decorate([
     typeorm_1.Column({
+        name: "template_param",
+        nullable: true,
+        comment: "短信参数"
+    }),
+    __metadata("design:type", String)
+], SmsLog.prototype, "templateParam", void 0);
+__decorate([
+    typeorm_1.Column({
         name: "validation_code",
         comment: "短信验证码",
         nullable: true
