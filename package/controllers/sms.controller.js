@@ -28,10 +28,14 @@ let SmsController = class SmsController {
     }
     sendMessage(body) {
         return __awaiter(this, void 0, void 0, function* () {
-            if ([0, 1, 2].indexOf(body.type) !== -1) {
-                return this.smsService.sendMessageByQCloud(body.type, body.smsRequest);
+            const { type, smsRequest: { appId, templateId, mobile } } = body;
+            if ([0, 1, 2].indexOf(type) === -1) {
+                throw new common_1.HttpException("type参数错误：0-通知短信，1-验证码短信，2-自定义参数短信", 406);
             }
-            return { code: 406, message: "type参数错误：0-通知短信，1-验证码短信，2-自定义参数短信" };
+            if (!appId || !templateId || !mobile) {
+                throw new common_1.HttpException("appId、templateId、mobile 参数不能为空", 406);
+            }
+            return this.smsService.sendMessageByQCloud(type, body.smsRequest);
         });
     }
     smsValidator(body) {

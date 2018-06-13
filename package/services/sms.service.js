@@ -217,13 +217,15 @@ let SmsService = class SmsService {
                     default:
                         throw new common_1.HttpException("type参数错误", 406);
                 }
-                yield this.qcloudService.sendSms(smsRequest).then(resolve => {
-                    this.saveSmsLog(type, true, resolve.code, resolve.message, smsRequest, new sms_log_entity_1.SmsLog());
-                }).catch(reject => {
-                    const rejectCode = reject.code ? reject.code : 500;
-                    this.saveSmsLog(type, false, rejectCode, reject.message, smsRequest, new sms_log_entity_1.SmsLog());
-                    throw new common_1.HttpException(`发送失败，原因：${reject.message}`, rejectCode);
-                });
+                try {
+                    const result = yield this.qcloudService.sendSms(smsRequest);
+                    yield this.saveSmsLog(type, true, result.code, result.message, smsRequest, new sms_log_entity_1.SmsLog());
+                }
+                catch (error) {
+                    const rejectCode = error.code ? error.code : 500;
+                    yield this.saveSmsLog(type, false, rejectCode, error.message, smsRequest, new sms_log_entity_1.SmsLog());
+                    throw new common_1.HttpException(`发送失败，原因：${error.message}`, rejectCode);
+                }
                 return { code: 200, message: "发送短信成功" };
             }
         });
