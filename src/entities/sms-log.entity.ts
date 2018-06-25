@@ -31,7 +31,7 @@ export class SmsLog {
         onDelete: "CASCADE"
     })
     @JoinColumn({
-        name: "sms_templateId"
+        name: "template_id"
     })
     smsTemplate: SmsTemplate;
 
