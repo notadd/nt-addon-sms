@@ -38,7 +38,7 @@ __decorate([
         onDelete: "CASCADE"
     }),
     typeorm_1.JoinColumn({
-        name: "sms_templateId"
+        name: "template_id"
     }),
     __metadata("design:type", sms_template_entity_1.SmsTemplate)
 ], SmsLog.prototype, "smsTemplate", void 0);
