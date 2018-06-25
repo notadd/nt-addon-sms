@@ -44,8 +44,12 @@ export class ExampleService {
 
     // SmsRequest example：(2 , { appId: "1234567890", templateId: 123456, templateParam: ["xxxxx", "xxxxx"], "mobile": ["13512345678"] })
     async sendSms(type: number, smsRequest: SmsRequest) {
-        // Send SMS, type is the type of message can only pass 0 or 1, 0 is a notification message, 1 is a verification code message
-        // reuturn { code: number, message: string }
+        // SMS type 0 for notification SMS, 1 for verification code SMS, 2 for custom parameters SMS
+        // on success reuturn {code: 200, message: "send message successful" }
+        // on error:
+        // HttpException (`specifies SMS plugin 'appId=xxxxx' does not exist`, 404)
+        // HttpException (`specify message template 'templateId=xxxxx' does not exist`, 404)
+        // HttpException (`send failed, reason: xxxxx`, xxxxx)
         await this.smsComponentProvider(type, smsRequest);
     }
 
