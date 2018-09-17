@@ -50,7 +50,7 @@ export class ExampleService {
         // HttpException (`specifies SMS plugin 'appId=xxxxx' does not exist`, 404)
         // HttpException (`specify message template 'templateId=xxxxx' does not exist`, 404)
         // HttpException (`send failed, reason: xxxxx`, xxxxx)
-        await this.smsComponentProvider(type, smsRequest);
+        await this.smsComponentProvider.sendSmsMessageByQCloud(type, smsRequest);
     }
 
     async smsValidator(mobile: string, validationCode: number) {

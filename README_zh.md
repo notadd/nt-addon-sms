@@ -49,7 +49,7 @@ export class ExampleService {
         // HttpException (`指定短信插件'appId=xxxxx'不存在`, 404);
         // HttpException (`指定短信模板'templateId=xxxxx'不存在`, 404);
         // HttpException (`发送失败，原因：xxxxx`, xxxxx);
-        await this.smsComponentProvider(type, smsRequest);
+        await this.smsComponentProvider.sendSmsMessageByQCloud(type, smsRequest);
     }
 
     async smsValidator(mobile: string, validationCode: number) {
