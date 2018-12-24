@@ -9,8 +9,7 @@
         "noImplicitAny": false,
         "noLib": false,
         "lib": [
-            "es6",
-            "dom",
+            "es2017",
             "esnext.asynciterable"
         ],
         "noUnusedLocals": false,
@@ -18,15 +17,15 @@
         "strict": false,
         "strictPropertyInitialization": false,
         "target": "es6",
-        "outDir": "packages"
+        "outDir": "dist"
     },
     "include": [
-        "src/*.ts",
         "src/**/*.ts",
         "starter/*.ts"
     ],
     "exclude": [
         "node_modules",
+        "**/*.spec.ts",
         "test"
     ]
 }

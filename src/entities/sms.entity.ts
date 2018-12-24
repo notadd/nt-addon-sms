@@ -1,18 +1,16 @@
-import { Column, Entity, OneToMany, PrimaryColumn } from "typeorm";
+import { Column, Entity, OneToMany, PrimaryColumn } from 'typeorm';
 
-import { SmsTemplate } from "./sms-template.entity";
+import { SmsTemplate } from './sms-template.entity';
 
-@Entity("sms")
+@Entity('sms')
 export class Sms {
     @PrimaryColumn({
-        name: "app_id",
-        comment: "短信服务AppId"
+        comment: '短信服务AppId'
     })
     appId: string;
 
     @Column({
-        name: "app_key",
-        comment: "短信服务AppKey"
+        comment: '短信服务AppKey'
     })
     appKey: string;
 
@@ -20,8 +18,7 @@ export class Sms {
      * 短信签名，必须唯一
      */
     @Column({
-        name: "sign_name",
-        comment: "短信签名",
+        comment: '短信签名',
         unique: true
     })
     signName: string;
@@ -30,17 +27,16 @@ export class Sms {
      * 短信模板，可以一次保存多个，也可后续通过对应短信插件实体进行增加
      */
     @OneToMany(type => SmsTemplate, template => template.sms, {
-        cascade: ["insert"]
+        cascade: ['insert']
     })
-    templates: Array<SmsTemplate>;
+    templates: SmsTemplate[];
 
     /**
      * 验证码有效期，默认5分钟
      */
     @Column({
-        name: "validation_time",
-        comment: "验证码有效期，默认5分钟",
+        comment: '验证码有效期，默认5分钟',
         default: 5
     })
-    validationTime: number;
+    validationTime?: number;
 }

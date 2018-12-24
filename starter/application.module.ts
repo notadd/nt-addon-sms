@@ -1,37 +1,36 @@
-import { MiddlewareConsumer, Module, NestModule } from "@nestjs/common";
-import { APP_INTERCEPTOR } from "@nestjs/core";
-import { GraphQLFactory, GraphQLModule } from "@nestjs/graphql";
-import { TypeOrmModule } from "@nestjs/typeorm";
-import { graphiqlExpress, graphqlExpress } from "apollo-server-express";
+import { Module, OnModuleInit } from '@nestjs/common';
+import { TypeOrmModule } from '@nestjs/typeorm';
 
-import { ErrorsInterceptor } from "../src/interceptors/exception.interceptor";
-import { SmsModule } from "../src/sms.module";
+import { SmsService } from '../src';
+import { SmsModule } from '../src/sms.module';
 
 @Module({
-  imports: [
-    GraphQLModule,
-    TypeOrmModule.forRoot(),
-    SmsModule
-  ],
-  providers : [
-    {
-      provide: APP_INTERCEPTOR,
-      useClass: ErrorsInterceptor
-    }
-  ]
+    imports: [
+        TypeOrmModule.forRoot(),
+        SmsModule
+    ]
 })
-export class ApplicationModule implements NestModule {
-  constructor(private readonly graphQLFactory: GraphQLFactory) {
-  }
+export class ApplicationModule implements OnModuleInit {
+    constructor(private readonly smsService: SmsService) { }
 
-  configure(consumer: MiddlewareConsumer) {
-    const typeDefs = this.graphQLFactory.mergeTypesByPaths("./**/*.original.graphql");
-    const schema = this.graphQLFactory.createSchema({ typeDefs });
+    async onModuleInit() {
+        // await this.smsService.createSms({
+        //     appId: '1400084602',
+        //     appKey: '71db721461cda01c01377770383d119b',
+        //     signName: '段泽尧',
+        //     templates: [
+        //         {
+        //             templateId: 111704,
+        //             name: '短信测试',
+        //             remark: '您的验证码是{1}，请于{2}分钟内填写。如非本人操作，请忽略本短信。'
+        //         }
+        //     ]
+        // });
 
-    consumer
-      .apply(graphiqlExpress({ endpointURL: "/graphql" }))
-      .forRoutes("/graphiql")
-      .apply(graphqlExpress(req => ({ schema, rootValue: req })))
-      .forRoutes("/graphql");
-  }
+        // await this.smsService.sendMessageByQCloud(1, {
+        //     appId: '1400084602',
+        //     templateId: 111704,
+        //     mobile: ['18133970155']
+        // });
+    }
 }

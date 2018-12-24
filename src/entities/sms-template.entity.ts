@@ -1,16 +1,15 @@
-import { Column, Entity, JoinColumn, ManyToOne, OneToMany, PrimaryColumn } from "typeorm";
+import { Column, Entity, JoinColumn, ManyToOne, OneToMany, PrimaryColumn } from 'typeorm';
 
-import { SmsLog } from "./sms-log.entity";
-import { Sms } from "./sms.entity";
+import { SmsLog } from './sms-log.entity';
+import { Sms } from './sms.entity';
 
-@Entity("sms_template")
+@Entity('sms_template')
 export class SmsTemplate {
     /**
      * 短信模板id，在云服务商申请模板所生成的id
      */
     @PrimaryColumn({
-        name: "template_id",
-        comment: "短信模板ID"
+        comment: '短信模板ID'
     })
     templateId: number;
 
@@ -18,8 +17,7 @@ export class SmsTemplate {
      * 模板标识
      */
     @Column({
-        name: "name",
-        comment: "模板标识"
+        comment: '模板标识'
     })
     name: string;
 
@@ -27,24 +25,21 @@ export class SmsTemplate {
      * 模板备注，用于声明模板用途
      */
     @Column({
-        name: "remark",
-        comment: "模板备注，用于声明模板用途"
+        comment: '模板备注，用于声明模板用途'
     })
     remark: string;
 
     @ManyToOne(type => Sms, sms => sms.templates, {
-        onDelete: "CASCADE"
+        onDelete: 'CASCADE'
     })
-    @JoinColumn({
-        name: "sms_id"
-    })
-    sms: Sms;
+    @JoinColumn()
+    sms?: Sms;
 
     /**
      * 短信发送记录
      */
-    @OneToMany(type => SmsLog, smslog => smslog.smsTemplate, {
-        cascade: ["update"]
+    @OneToMany(type => SmsLog, smslog => smslog.template, {
+        cascade: ['update']
     })
-    smsLogs: Array<SmsLog>;
+    smsLogs?: SmsLog[];
 }

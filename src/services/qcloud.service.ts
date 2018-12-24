@@ -1,19 +1,14 @@
-import { Inject, Injectable } from "@nestjs/common";
-import * as Chance from "chance";
-import * as crypto from "crypto";
-import { post } from "request";
+import { HttpService, Inject, Injectable } from '@nestjs/common';
+import * as Chance from 'chance';
+import * as crypto from 'crypto';
 
-import { SmsRequest } from "../interfaces/sms-request.interface";
-import { ParamUtil } from "../utils/param.util";
+import { SmsRequest } from '../interfaces/sms-request.interface';
 
 @Injectable()
 export class QcloudService {
+    constructor(@Inject(HttpService) private readonly httpService: HttpService) { }
 
-    constructor(
-        @Inject(ParamUtil) private readonly paramUtil: ParamUtil
-    ) { }
-
-    private smsApiBase = "https://yun.tim.qq.com/v5/tlssmssvr/";
+    private smsApiBase = 'https://yun.tim.qq.com/v5/tlssmssvr/';
 
     /**
      * 发送短信
@@ -22,7 +17,7 @@ export class QcloudService {
      */
     async sendSms(smsRequest: SmsRequest): Promise<any> {
         // api 请求地址
-        let url = "";
+        let url = '';
         // 随机数
         const random = new Chance().natural({ max: 100000 });
         // 发送短信系统当前时间戳
@@ -32,11 +27,11 @@ export class QcloudService {
         // 根据 mobile 类型，改变 api 地址及 mobile 参数内容
         let mobile;
         if (smsRequest.mobile.length === 1) {
-            url = this.smsApiBase + "sendsms";
-            mobile = { mobile: smsRequest.mobile[0], nationcode: "86" };    // nationcode 为国家码，现只支持国内(86)
+            url = this.smsApiBase + 'sendsms';
+            mobile = { mobile: smsRequest.mobile[0], nationcode: '86' };    // nationcode 为国家码，现只支持国内(86)
         } else {
-            url = this.smsApiBase + "sendmultisms2";
-            mobile = smsRequest.mobile.map(item => ({ mobile: item, nationcode: "86" }));
+            url = this.smsApiBase + 'sendmultisms2';
+            mobile = smsRequest.mobile.map(item => ({ mobile: item, nationcode: '86' }));
         }
         url += `?sdkappid=${smsRequest.appId}&random=${random}`;
         // api 调用参数
@@ -60,10 +55,10 @@ export class QcloudService {
      * @param {Array<string>} mobile 用户手机号
      * @returns {string} App 凭证
      */
-    private async calculateSignature(appKey: string, random: number, time: number, mobile: Array<string>): Promise<string> {
-        return crypto.createHash("sha256")
-            .update(`appkey=${appKey}&random=${random}&time=${time}&mobile=${mobile.join()}`, "utf8")
-            .digest("hex");
+    private async calculateSignature(appKey: string, random: number, time: number, mobile: string[]): Promise<string> {
+        return crypto.createHash('sha256')
+            .update(`appkey=${appKey}&random=${random}&time=${time}&mobile=${mobile.join()}`, 'utf8')
+            .digest('hex');
     }
 
     /**
@@ -73,17 +68,13 @@ export class QcloudService {
      * @param options 请求参数
      * @returns Promise<any>
      */
-    private async post(url: string, reqBody: any): Promise<any> {
-        return new Promise(((resolve, reject) => {
-            post(url, { body: reqBody, headers: { "Content-Type": "application/json" } }, (err, res, body) => {
-                const responseBody = JSON.parse(body);
-                // 返回结果为0表示发送成功， 非0则返回错误码和错误信息
-                if (responseBody.result === 0) {
-                    resolve({ code: responseBody.result, message: "发送成功" });
-                } else {
-                    reject({ code: responseBody.result, message: responseBody.errmsg });
-                }
-            });
-        }));
+    private async post(url: string, reqBody: any) {
+        const { data } = await this.httpService.post(url, reqBody).toPromise();
+        // 返回结果为0表示发送成功， 非0则返回错误码和错误信息
+        if (data.result === 0) {
+            return { code: data.result, message: '发送成功' };
+        } else {
+            return { code: data.result, message: data.errmsg };
+        }
     }
 }

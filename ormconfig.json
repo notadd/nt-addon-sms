@@ -4,10 +4,11 @@
   "port": 5432,
   "username": "postgres",
   "password": "123456",
-  "database": "notadd_ext_sms",
+  "database": "notadd_addon_sms",
   "entities": [
     "src/**/**.entity{.ts,.js}"
   ],
   "synchronize": true,
-  "logging": false
+  "logging": true,
+  "logger": "advanced-console"
 }

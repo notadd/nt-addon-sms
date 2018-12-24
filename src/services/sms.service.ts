@@ -1,15 +1,15 @@
-import { HttpException, Inject, Injectable } from "@nestjs/common";
-import { InjectRepository } from "@nestjs/typeorm";
-import * as moment from "moment";
-import { getConnection, Repository } from "typeorm";
+import { HttpException, Inject, Injectable } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import * as moment from 'moment';
+import { getConnection, Repository } from 'typeorm';
 
-import { SmsLog } from "../entities/sms-log.entity";
-import { SmsTemplate } from "../entities/sms-template.entity";
-import { Sms } from "../entities/sms.entity";
-import { SmsLogData } from "../interfaces/sms-log-info.interface";
-import { SmsRequest } from "../interfaces/sms-request.interface";
-import { ParamUtil } from "../utils/param.util";
-import { QcloudService } from "./qcloud.service";
+import { SmsLog } from '../entities/sms-log.entity';
+import { SmsTemplate } from '../entities/sms-template.entity';
+import { Sms } from '../entities/sms.entity';
+import { SmsLogData } from '../interfaces/sms-log-info.interface';
+import { SmsRequest } from '../interfaces/sms-request.interface';
+import { ParamUtil } from '../utils/param.util';
+import { QcloudService } from './qcloud.service';
 
 @Injectable()
 export class SmsService {
@@ -28,7 +28,10 @@ export class SmsService {
      * @param sms 短信插件实体
      */
     async createSms(sms: Sms): Promise<void> {
-        const existSms: Sms | undefined = await this.smsRepository.createQueryBuilder("sms").where(`sms.app_id='${sms.appId}' OR sms.sign_name='${sms.signName}'`).getOne();
+        const existSms = await this.smsRepository.createQueryBuilder('sms')
+            .where('sms.appId = :appId', { appId: sms.appId })
+            .orWhere('sms.signName = :signName', { signName: sms.signName })
+            .getOne();
         if (existSms) {
             const existError = existSms.appId === sms.appId ? `appId=${sms.appId}` : `signName=${sms.signName}`;
             throw new HttpException(`短信插件'${existError}'已存在`, 409);
@@ -56,7 +59,7 @@ export class SmsService {
      * @param appId 短信插件id
      * @param smsTemplate 短信模板实体数组
      */
-    async addTemplateToSms(appId: string, smsTemplate: Array<SmsTemplate>): Promise<void> {
+    async addTemplateToSms(appId: string, smsTemplate: SmsTemplate[]): Promise<void> {
         const existSms: Sms | undefined = await this.smsRepository.findOne(appId);
         if (!existSms) {
             throw new HttpException(`指定短信插件'appId=${appId}'不存在`, 404);
@@ -72,7 +75,7 @@ export class SmsService {
         await queryRunner.startTransaction();
         try {
             const newSmsTemplate = await queryRunner.manager.save(SmsTemplate, smsTemplate);
-            await queryRunner.manager.createQueryBuilder().relation(Sms, "templates").of(existSms).add(newSmsTemplate.map(item => item.templateId));
+            await queryRunner.manager.createQueryBuilder().relation(Sms, 'templates').of(existSms).add(newSmsTemplate.map(item => item.templateId));
             // 提交事务
             await queryRunner.commitTransaction();
         } catch (error) {
@@ -159,33 +162,33 @@ export class SmsService {
      * @param appId 短信插件id
      */
     async findOneSms(appId: string): Promise<Sms> {
-        return this.smsRepository.findOne(appId, { relations: ["templates"] });
+        return this.smsRepository.findOne(appId, { relations: ['templates'] });
     }
 
     /**
      * 查询所有短信插件信息
      */
-    async findAllSms(): Promise<Array<Sms>> {
-        return this.smsRepository.find({ relations: ["templates"] });
+    async findAllSms(): Promise<Sms[]> {
+        return this.smsRepository.find({ relations: ['templates'] });
     }
 
     /**
      * 查询指定 templateId 的短信发送记录
      * @param templateId 短信模板id
      */
-    async findOneSmsLog(templateId: number): Promise<Array<SmsLogData>> {
+    async findOneSmsLog(templateId: number): Promise<SmsLogData[]> {
         const existTemplate: SmsTemplate | undefined = await this.smsTemplateRepository.findOne(templateId);
         if (!existTemplate) {
             throw new HttpException(`指定短信模板'templateId=${templateId}'不存在`, 404);
         }
-        const smsLogList = await this.smsLogRepository.find({ relations: ["smsTemplate"], where: { smsTemplate: { templateId } } });
+        const smsLogList = await this.smsLogRepository.find({ relations: ['smsTemplate'], where: { smsTemplate: { templateId } } });
         return this.forMatSmsLogSendTime(smsLogList);
     }
 
     /**
      * 查询所有短信发送记录
      */
-    async findAllSmsLog(): Promise<Array<SmsLogData>> {
+    async findAllSmsLog(): Promise<SmsLogData[]> {
         const smsLogList = await this.smsLogRepository.find();
         // 格式化日期
         return this.forMatSmsLogSendTime(smsLogList);
@@ -196,17 +199,17 @@ export class SmsService {
      *
      * @param smsLogList 短信发送记录日志列表
      */
-    private async forMatSmsLogSendTime(smsLogList: Array<SmsLog>): Promise<Array<SmsLogData>> {
-        const smsLogDataList: Array<SmsLogData> = smsLogList.map(item => {
+    private async forMatSmsLogSendTime(smsLogList: SmsLog[]): Promise<SmsLogData[]> {
+        const smsLogDataList: SmsLogData[] = smsLogList.map(item => {
             const smsLogData: SmsLogData = {
                 id: item.id,
-                sendTime: moment(item.sendTime).format("YYYY-MM-DD HH:mm:ss"),
+                sendTime: moment(item.sendTime).format('YYYY-MM-DD HH:mm:ss'),
                 targetMobile: item.targetMobile,
                 validationCode: item.validationCode,
                 validationTime: item.validationTime,
-                isSuccess: item.isSuccess,
+                success: item.success,
                 responseCode: item.responseCode,
-                responseMessage: item.responseMessage,
+                responseMessage: item.responseMessage
             };
             return smsLogData;
         });
@@ -245,7 +248,7 @@ export class SmsService {
                 case 2:
                     break;
                 default:
-                    throw new HttpException("type参数错误", 406);
+                    throw new HttpException('type参数错误', 406);
             }
 
             // 发送短信，调用腾讯云短信服务接口，保存 response 返回的消息和状态码
@@ -258,7 +261,7 @@ export class SmsService {
                 throw new HttpException(`发送失败，原因：${error.message}`, rejectCode);
             }
 
-            return { code: 200, message: "发送短信成功" };
+            return { code: 200, message: '发送短信成功' };
         }
     }
 
@@ -269,19 +272,19 @@ export class SmsService {
      * @param validationCode 验证码
      */
     async validator(mobile: string, validationCode: number): Promise<void> {
-        const exist = await this.smsLogRepository.find({ where: { targetMobile: mobile }, order: { sendTime: "DESC" }, take: 1 });
+        const exist = await this.smsLogRepository.find({ where: { targetMobile: mobile }, order: { sendTime: 'DESC' }, take: 1 });
 
         if (exist.length === 0) {
-            throw new HttpException("输入的手机号码与接收短信的手机号码不一致", 404);
+            throw new HttpException('输入的手机号码与接收短信的手机号码不一致', 404);
         }
 
         if (validationCode !== exist[0].validationCode) {
-            throw new HttpException("验证码错误", 406);
+            throw new HttpException('验证码错误', 406);
         }
 
         // 如果当前时间大于有效时间(发送时间+有效期)
-        if (moment().isAfter(moment(exist[0].sendTime, "YYYY-MM-DD HH:mm:ss").add(exist[0].validationTime, "m"))) {
-            throw new HttpException("验证超时，请重新获取验证码", 408);
+        if (moment().isAfter(moment(exist[0].sendTime, 'YYYY-MM-DD HH:mm:ss').add(exist[0].validationTime, 'm'))) {
+            throw new HttpException('验证超时，请重新获取验证码', 408);
         }
     }
 
@@ -293,7 +296,7 @@ export class SmsService {
      * @param smsRequest 短信发送数据实体
      * @param smsLog 短信发送记录
      */
-    private async saveSmsLog(type: number, isSuccess: boolean, responseCode: string, responseMessage: string, smsRequest: SmsRequest, smsLog: SmsLog) {
+    private async saveSmsLog(type: number, success: boolean, responseCode: string, responseMessage: string, smsRequest: SmsRequest, smsLog: SmsLog) {
         // 保存接收短信的手机号
         smsLog.targetMobile = smsRequest.mobile.join();
         // 保存验证码类短信的验证码和有效期
@@ -307,7 +310,7 @@ export class SmsService {
             smsLog.templateParam = JSON.stringify(smsRequest.templateParam);
         }
         // 是否发送成功
-        smsLog.isSuccess = isSuccess;
+        smsLog.success = success;
         smsLog.responseCode = responseCode;
         smsLog.responseMessage = responseMessage;
         // 发送时间
@@ -317,7 +320,7 @@ export class SmsService {
         await queryRunner.startTransaction();
         try {
             const newLog = await queryRunner.manager.save(smsLog);
-            await queryRunner.manager.createQueryBuilder().relation(SmsTemplate, "smsLogs").of(smsRequest.templateId).add(newLog);
+            await queryRunner.manager.createQueryBuilder().relation(SmsTemplate, 'smsLogs').of(smsRequest.templateId).add(newLog);
             // 提交事务
             await queryRunner.commitTransaction();
         } catch (error) {
