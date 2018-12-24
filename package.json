@@ -1,7 +1,7 @@
 {
-    "name": "ext-sms",
-    "version": "2.2.1",
-    "description": "Notadd 短信验证码插件",
+    "name": "nt-addon-sms",
+    "version": "3.0.0",
+    "description": "The sms addon for notadd application.",
     "scripts": {
         "start": "ts-node -r tsconfig-paths/register starter/main.ts",
         "start:watch": "nodemon",
@@ -11,7 +11,7 @@
         "fix": "tslint -p tsconfig.json -c tslint.json --fix"
     },
     "author": "dzzzzzy",
-    "license": "MIT",
+    "license": "Apache-2.0",
     "dependencies": {
         "@nestjs/common": "^5.0.0",
         "@nestjs/core": "^5.0.0",

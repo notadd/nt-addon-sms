@@ -1,1 +1,0 @@
-{"version":3,"sources":["../src/index.ts"],"names":[],"mappings":";;AAAA,2CAAyC;AAAhC,iCAAA,SAAS,CAAA;AAElB,2EAAgE;AAAvD,gDAAA,YAAY,CAAA","file":"index.js","sourcesContent":["export { SmsModule } from \"./sms.module\";\n\nexport { SmsComponent } from \"./exports/sms.component.provider\";\n"]}

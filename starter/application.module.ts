@@ -2,12 +2,12 @@ import { Module, OnModuleInit } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 
 import { SmsService } from '../src';
-import { SmsModule } from '../src/sms.module';
+import { SmsAddon } from '../src/sms.addon';
 
 @Module({
     imports: [
         TypeOrmModule.forRoot(),
-        SmsModule
+        SmsAddon
     ]
 })
 export class ApplicationModule implements OnModuleInit {

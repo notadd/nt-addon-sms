@@ -21,4 +21,4 @@ import { ParamUtil } from './utils/param.util';
     exports: [SmsService]
 })
 
-export class SmsModule { }
+export class SmsAddon { }
