@@ -32,7 +32,7 @@ export class SmsLog {
     template: SmsTemplate;
 
     /**
-     * 短信参数，保存自定义参数短信中输入的参数，json字符串，key是参数序号，value是参数值
+     * 短信参数，保存自定义参数短信中输入的参数
      */
     @Column({
         nullable: true,
