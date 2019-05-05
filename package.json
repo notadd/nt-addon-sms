@@ -21,7 +21,7 @@
         "pg": "^7.7.1",
         "reflect-metadata": "^0.1.12",
         "rxjs": "^6.2.0",
-        "typeorm": "^0.2.9"
+        "typeorm": "^0.2.15"
     },
     "devDependencies": {
         "@types/chance": "^1.0.0",
