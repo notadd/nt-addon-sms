@@ -5,4 +5,4 @@ ignore: {}
 patch:
   SNYK-JS-AXIOS-174505:
     - '@nestjs/common > axios':
-        patched: '2019-05-06T05:31:57.972Z'
+        patched: '2019-05-06T05:31:57.972Z
