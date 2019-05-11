@@ -29,7 +29,7 @@
   "devDependencies": {
     "@types/chance": "1.0.2",
     "@types/node": "10.12.18",
-    "nodemon": "1.18.9",
+    "nodemon": "1.19.0",
     "ts-node": "7.0.1",
     "tsconfig-paths": "3.7.0",
     "tslint": "5.12.0",
