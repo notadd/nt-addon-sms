@@ -27,7 +27,7 @@
     "snyk": "1.163.3"
   },
   "devDependencies": {
-    "@types/chance": "1.0.2",
+    "@types/chance": "1.0.3",
     "@types/node": "10.12.18",
     "nodemon": "1.19.0",
     "ts-node": "7.0.1",
