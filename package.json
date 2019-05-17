@@ -28,7 +28,7 @@
   },
   "devDependencies": {
     "@types/chance": "1.0.4",
-    "@types/node": "10.12.18",
+    "@types/node": "10.14.7",
     "nodemon": "1.19.0",
     "ts-node": "7.0.1",
     "tsconfig-paths": "3.8.0",

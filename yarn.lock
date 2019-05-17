@@ -70,10 +70,10 @@
   resolved "https://registry.yarnpkg.com/@types/json5/-/json5-0.0.29.tgz#ee28707ae94e11d2b827bcbe5270bcea7f3e71ee"
   integrity sha1-7ihweulOEdK4J7y+UnC86n8+ce4=
 
-"@types/node@10.12.18":
-  version "10.12.18"
-  resolved "https://registry.yarnpkg.com/@types/node/-/node-10.12.18.tgz#1d3ca764718915584fcd9f6344621b7672665c67"
-  integrity sha512-fh+pAqt4xRzPfqA6eh3Z2y6fyZavRIumvjhaCL753+TVkGKGhpPeyrJG2JftD0T9q4GF00KjefsQ+PQNDdWQaQ==
+"@types/node@10.14.7":
+  version "10.14.7"
+  resolved "https://registry.yarnpkg.com/@types/node/-/node-10.14.7.tgz#1854f0a9aa8d2cd6818d607b3d091346c6730362"
+  integrity sha512-on4MmIDgHXiuJDELPk1NFaKVUxxCFr37tm8E9yN6rAiF5Pzp/9bBfBHkoexqRiY+hk/Z04EJU9kKEb59YqJ82A==
 
 "@types/node@^8.0.7":
   version "8.10.48"
